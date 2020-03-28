@@ -19,6 +19,8 @@ class RicochetRobots {
     this.toggleTargetHightlight();
     this.board.pickNextTarget();
     this.toggleTargetHightlight();
+    const solutionDiv = document.getElementById("solution");
+    this.clearSolutionDiv(solutionDiv);
   }
 
   toggleTargetHightlight() {
@@ -74,10 +76,87 @@ class RicochetRobots {
     return JSON.parse(JSON.stringify(object));
   }
 
+  robotToString(robotId) {
+    let output = "";
+
+    if (robotId == GREEN_ROBOT) {
+      output = "green robot";
+    } else if (robotId == RED_ROBOT) {
+      output = "red robot";
+    } else if (robotId == BLUE_ROBOT) {
+      output = "blue robot";
+    } else if (robotId == YELLOW_ROBOT) {
+      output = "yellow robot";
+    }
+
+    return output;
+  }
+
+  moveToString(move) {
+    let output = "";
+
+    if (move == UP) {
+      output = "&uarr;";
+    } else if (move == DOWN) {
+      output = "&darr;";
+    } else if (move == RIGHT) {
+      output = "&rarr;";
+    } else if (move == LEFT) {
+      output = "&larr;";
+    }
+
+    return output;
+  }
+
+  clearSolutionDiv(solutionDiv) {
+      while (solutionDiv.firstChild) {
+        solutionDiv.removeChild(solutionDiv.firstChild)
+      }
+  }
+
   solve() {
+    let solution = this.bfs();
+
+    // Draw the path.
+    if (solution !== undefined) {
+      // Clear the contnts of the solution div.
+      const solutionDiv = document.getElementById("solution");
+      this.clearSolutionDiv(solutionDiv);
+      solutionDiv.innerHTML = "Found solution: <br />";
+
+      for (let i = 0; i < solution.length; ++i) {
+        const robotColor = solution[i][0];
+        const direction = solution[i][1];
+
+        const cellSpan = document.createElement('span');
+        cellSpan.classList.toggle('grid-cell');
+        cellSpan.classList.toggle('empty-grid-cell');
+
+        const robotSpan = document.createElement('span');
+        robotSpan.classList.toggle('robot');
+        if (robotColor === GREEN_ROBOT) {
+          robotSpan.classList.toggle('green-robot');
+        } else if (robotColor === RED_ROBOT) {
+          robotSpan.classList.toggle('red-robot');
+        } else if (robotColor === BLUE_ROBOT) {
+          robotSpan.classList.toggle('blue-robot');
+        } else if (robotColor === YELLOW_ROBOT) {
+          robotSpan.classList.toggle('yellow-robot');
+        }
+
+        robotSpan.innerHTML = this.moveToString(direction);
+
+        cellSpan.appendChild(robotSpan);
+        solutionDiv.appendChild(cellSpan);
+      }
+    }
+  }
+
+
+  bfs() {
     let initalRobots = this.deepCopyRobots(this.board.getRobots());
     let visited = new Set();
-    let queue = [{ robots: initalRobots, depth: 0 }];
+    let queue = [{ robots: initalRobots, depth: 0 , path: []}];
     while (queue.length > 0) {
       let currentState = queue.shift();
       let currentRobots = currentState.robots;
@@ -91,8 +170,7 @@ class RicochetRobots {
       // Check if final target has been reached.
       if (this.board.reachedTarget()) {
         this.board.moveAllRobots(initalRobots);
-        console.log('true');
-        return true;
+        return currentState.path;
       }
 
       for (let key in currentRobots) {
@@ -101,16 +179,23 @@ class RicochetRobots {
           this.board.moveRobot(currentRobots[key].color, movesForRobot[i]);
           let newRobotPostions = this.deepCopyRobots(this.board.getRobots());
           this.board.moveAllRobots(currentRobots);
+
           if (!visited.has(newRobotPostions)) {
-            queue.push({ robots: newRobotPostions, depth: currentDepth + 1 });
+            let path = [...currentState.path];
+            path.push([currentRobots[key].color, movesForRobot[i]]);
+
+            queue.push({
+                robots: newRobotPostions,
+                depth: currentDepth + 1,
+                path: path
+            });
           }
         }
       }
     }
 
     this.board.moveAllRobots(initalRobots);
-    console.log('false');
-    return false;
+    return undefined;
   }
 
   draw(parentNode) {

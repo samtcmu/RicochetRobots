@@ -1,7 +1,7 @@
 body {
   font-family: sans-serif;
   /* TODO: do you need units for font-size? */
-  font-size: 14;
+  font-size: 14px;
 }
 
 div#grid-canvas {
@@ -124,18 +124,22 @@ span.vortex-target {
 
 span.green-robot {
   background: green;
+  color: lime;
 }
 
 span.red-robot {
   background: red;
+  color: yellow;
 }
 
 span.blue-robot {
   background: blue;
+  color: cyan;
 }
 
 span.yellow-robot {
   background: yellow;
+  color: gray;
 }
 
 span.robot {
@@ -148,6 +152,9 @@ span.robot {
   border-radius: 50%;
   position: absolute;
   z-index: 2;
+
+  font: 12px bold;
+  text-align: center;
 }
 
 span.selected-robot {

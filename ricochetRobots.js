@@ -124,9 +124,8 @@ class RicochetRobots {
 
     let solution = []
     for (let maxDepth = 0; maxDepth < 10; ++maxDepth) {
-      solutionDiv.innerHTML += `Starting depth ${maxDepth}`;
+      console.log(`Depth ${maxDepth} <br />`);
       solution = this.dfs(maxDepth);
-      solutionDiv.innerHTML += `Starting depth ${maxDepth}`;
       if (solution !== undefined) {
         break;
       }

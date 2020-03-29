@@ -114,9 +114,28 @@ class RicochetRobots {
       }
   }
 
-  solve() {
+  solveWithBfs() {
     let solution = this.bfs();
+    this.drawSolution(solution);
+  }
 
+  solveWithDfs() {
+    const solutionDiv = document.getElementById("solution");
+
+    let solution = []
+    for (let maxDepth = 0; maxDepth < 10; ++maxDepth) {
+      solutionDiv.innerHTML += `Starting depth ${maxDepth}`;
+      solution = this.dfs(maxDepth);
+      solutionDiv.innerHTML += `Starting depth ${maxDepth}`;
+      if (solution !== undefined) {
+        break;
+      }
+    }
+
+    this.drawSolution(solution);
+  }
+
+  drawSolution(solution) {
     // Draw the path.
     if (solution !== undefined) {
       // Clear the contnts of the solution div.
@@ -162,7 +181,7 @@ class RicochetRobots {
       let currentRobots = currentState.robots;
       let currentDepth = currentState.depth;
       visited.add(currentRobots);
-      console.log('Current Depth:', currentDepth);
+      // console.log('Current Depth:', currentDepth);
 
       // This reset the robots position
       this.board.moveAllRobots(currentRobots);
@@ -185,6 +204,55 @@ class RicochetRobots {
             path.push([currentRobots[key].color, movesForRobot[i]]);
 
             queue.push({
+                robots: newRobotPostions,
+                depth: currentDepth + 1,
+                path: path
+            });
+          }
+        }
+      }
+    }
+
+    this.board.moveAllRobots(initalRobots);
+    return undefined;
+  }
+
+  dfs(maxDepth) {
+    let initalRobots = this.deepCopyRobots(this.board.getRobots());
+    let visited = new Set();
+    let stack = [{ robots: initalRobots, depth: 0 , path: []}];
+    while (stack.length > 0) {
+      let currentState = stack.pop();
+      let currentRobots = currentState.robots;
+      let currentDepth = currentState.depth;
+      visited.add(currentRobots);
+
+      // This reset the robots position
+      this.board.moveAllRobots(currentRobots);
+
+      // If we've reached the maximum depth from the start state don't visit
+      // any neighbors.
+      if (currentDepth >= maxDepth) {
+        // Check if final target has been reached.
+        if (this.board.reachedTarget()) {
+          this.board.moveAllRobots(initalRobots);
+          return currentState.path;
+        }
+        continue;
+      }
+
+      for (let key in currentRobots) {
+        let movesForRobot = this.board.movesForRobot(currentRobots[key].color);
+        for (let i = 0; i < movesForRobot.length; i++) {
+          this.board.moveRobot(currentRobots[key].color, movesForRobot[i]);
+          let newRobotPostions = this.deepCopyRobots(this.board.getRobots());
+          this.board.moveAllRobots(currentRobots);
+
+          if (!visited.has(newRobotPostions)) {
+            let path = [...currentState.path];
+            path.push([currentRobots[key].color, movesForRobot[i]]);
+
+            stack.push({
                 robots: newRobotPostions,
                 depth: currentDepth + 1,
                 path: path

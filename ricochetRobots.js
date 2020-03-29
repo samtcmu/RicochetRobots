@@ -124,8 +124,10 @@ class RicochetRobots {
 
     let solution = []
     for (let maxDepth = 0; maxDepth < 10; ++maxDepth) {
-      console.log(`Depth ${maxDepth}`);
+      const start = performance.now();
       solution = this.dfs(maxDepth);
+      const end = performance.now();
+      console.log(`Finished depth ${maxDepth} (${end - start} ms)`);
       if (solution !== undefined) {
         break;
       }
@@ -172,6 +174,9 @@ class RicochetRobots {
 
 
   bfs() {
+    let start = performance.now();
+    let end = null;
+    let maxDepthSoFar = 0;
     let initalRobots = this.deepCopyRobots(this.board.getRobots());
     let visited = new Set();
     let queue = [{ robots: initalRobots, depth: 0 , path: []}];
@@ -180,7 +185,13 @@ class RicochetRobots {
       let currentRobots = currentState.robots;
       let currentDepth = currentState.depth;
       visited.add(currentRobots);
-      // console.log('Current Depth:', currentDepth);
+
+      if (currentDepth > maxDepthSoFar) {
+        end = performance.now();
+        console.log(`Finished Depth: ${maxDepthSoFar} (${end - start} ms)`);
+        maxDepthSoFar = currentDepth;
+        start = end;
+      }
 
       // This reset the robots position
       this.board.moveAllRobots(currentRobots);

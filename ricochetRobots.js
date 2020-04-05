@@ -33,6 +33,8 @@ class RicochetRobots {
 
     // Save the current robots for the reset function.
     this.currentRobots = this.deepCopyRobots(this.board.getRobots());
+
+    this.countdownStart = undefined;
   }
 
   resetRobots() {
@@ -68,10 +70,14 @@ class RicochetRobots {
 
   startCountdown() {
     const updateCountdown = () => {
+      const countdownTimerDiv = document.getElementById("countdown-timer");
+
+      if (this.countdownStart === undefined) {
+        countdownTimerDiv.innerHTML = "";
+      }
+
       const now = Math.floor(Date.now() / 1000);
       const secondsRemaining = Math.max(60 - (now - this.countdownStart), 0);
-
-      const countdownTimerDiv = document.getElementById("countdown-timer");
 
       if (secondsRemaining > 0) {
         countdownTimerDiv.innerHTML = `${secondsRemaining} s`;

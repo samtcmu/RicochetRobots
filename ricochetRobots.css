@@ -158,7 +158,7 @@ span.robot {
 }
 
 span.selected-robot {
-  border: 4px solid cyan;
+  border: 4px solid lime;
 }
 
 span.target-cell {

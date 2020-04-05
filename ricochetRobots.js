@@ -12,6 +12,12 @@ class RicochetRobots {
     this.board.initializedRobotPositions();
     this.board.pickNextTarget();
     this.board.selectedRobotColor = undefined;
+
+    this.currentRobots = {}
+    const robots = this.board.getRobots()
+    for (let key in robots) {
+      this.currentRobots[key] = {...robots[key]};
+    }
   }
 
   selectNewTarget() {
@@ -21,6 +27,40 @@ class RicochetRobots {
     this.toggleTargetHightlight();
     const solutionDiv = document.getElementById("solution");
     this.clearSolutionDiv(solutionDiv);
+
+    // Save the current robots for the reset function.
+    this.currentRobots = {}
+    const robots = this.board.getRobots()
+    for (let key in robots) {
+      this.currentRobots[key] = {...robots[key]};
+    }
+  }
+
+  resetRobots() {
+    const robotSpans = {}
+
+    const robots = this.board.getRobots()
+    for (let key in robots) {
+      let robotRowPosition = robots[key].row;
+      let robotColumnPosition = robots[key].column;
+      let robotColor = robots[key].color;
+
+      // Remove the robot span and move it to the new position.
+      // get the cell the contains the robot removeChild.
+      let robotSpan = document.getElementById(`${robotIdMap[key]}`);
+      robotSpan.parentNode.removeChild(robotSpan);
+      robotSpans[robotColor] = robotSpan;
+    }
+
+    this.board.moveAllRobots(this.currentRobots);
+
+    for (let key in this.currentRobots) {
+      let row = this.currentRobots[key].row;
+      let column = this.currentRobots[key].column;
+      let robotColor = this.currentRobots[key].color;
+      let cellSpan = document.getElementById(`${row}, ${column}`);
+      cellSpan.appendChild(robotSpans[robotColor]);
+    }
   }
 
   toggleTargetHightlight() {

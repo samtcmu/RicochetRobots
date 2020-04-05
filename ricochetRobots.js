@@ -74,6 +74,7 @@ class RicochetRobots {
 
       if (this.countdownStart === undefined) {
         countdownTimerDiv.innerHTML = "";
+        return;
       }
 
       const now = Math.floor(Date.now() / 1000);

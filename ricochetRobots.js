@@ -66,6 +66,26 @@ class RicochetRobots {
     pathDiv.innerHTML = "Candidate path: <br />";
   }
 
+  startCountdown() {
+    const updateCountdown = () => {
+      const now = Math.floor(Date.now() / 1000);
+      const secondsRemaining = Math.max(60 - (now - this.countdownStart), 0);
+
+      const countdownTimerDiv = document.getElementById("countdown-timer");
+
+      if (secondsRemaining > 0) {
+        countdownTimerDiv.innerHTML = `${secondsRemaining} s`;
+        window.requestAnimationFrame(updateCountdown);
+      } else {
+        countdownTimerDiv.innerHTML = "Countdown Over";
+      }
+    }
+
+    this.countdownStart = Math.floor(Date.now() / 1000);
+    window.requestAnimationFrame(updateCountdown);
+  }
+
+
   toggleTargetHightlight() {
     let target = this.board.getCurrentTarget();
     let targetRow = target.row;

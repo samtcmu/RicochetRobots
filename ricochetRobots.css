@@ -19,6 +19,7 @@ span.grid-cell {
   height: 32px;
   border: 1px dotted gray;
   position: relative;
+  user-select: none;
 }
 
 span.empty-grid-cell {

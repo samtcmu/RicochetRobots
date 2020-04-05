@@ -14,6 +14,10 @@ class RicochetRobots {
     this.board.selectedRobotColor = undefined;
 
     this.currentRobots = this.deepCopyRobots(this.board.getRobots());
+
+    const pathDiv = document.getElementById("path");
+    this.clearDiv(pathDiv);
+    pathDiv.innerHTML = "Candidate path: <br />";
   }
 
   selectNewTarget() {
@@ -22,7 +26,10 @@ class RicochetRobots {
     this.board.pickNextTarget();
     this.toggleTargetHightlight();
     const solutionDiv = document.getElementById("solution");
-    this.clearSolutionDiv(solutionDiv);
+    this.clearDiv(solutionDiv);
+    const pathDiv = document.getElementById("path");
+    this.clearDiv(pathDiv);
+    pathDiv.innerHTML = "Candidate path: <br />";
 
     // Save the current robots for the reset function.
     this.currentRobots = this.deepCopyRobots(this.board.getRobots());
@@ -53,6 +60,10 @@ class RicochetRobots {
       let cellSpan = document.getElementById(`${row}, ${column}`);
       cellSpan.appendChild(robotSpans[robotColor]);
     }
+
+    const pathDiv = document.getElementById("path");
+    this.clearDiv(pathDiv);
+    pathDiv.innerHTML = "Candidate path: <br />";
   }
 
   toggleTargetHightlight() {
@@ -84,6 +95,10 @@ class RicochetRobots {
     let column = robots[this.board.selectedRobotColor].column;
     let cellSpan = document.getElementById(`${row}, ${column}`);
     cellSpan.appendChild(robotSpan);
+
+    let pathDiv = document.getElementById("path");
+    pathDiv.appendChild(
+        this.pathComponentSpan(this.board.selectedRobotColor, direction));
   }
 
   keyboardHandler(key) {
@@ -97,7 +112,10 @@ class RicochetRobots {
     } else if (key === 'ArrowRight') {
       moveDirection = MOVE_RIGHT;
     }
-    this.moveSelectedRobot(moveDirection);
+
+    if (moveDirection !== null) {
+      this.moveSelectedRobot(moveDirection);
+    }
   }
 
   getRobotsAsString() {
@@ -140,9 +158,9 @@ class RicochetRobots {
     return output;
   }
 
-  clearSolutionDiv(solutionDiv) {
-      while (solutionDiv.firstChild) {
-        solutionDiv.removeChild(solutionDiv.firstChild)
+  clearDiv(div) {
+      while (div.firstChild) {
+        div.removeChild(div.firstChild)
       }
   }
 
@@ -168,37 +186,42 @@ class RicochetRobots {
     this.drawSolution(solution);
   }
 
+  pathComponentSpan(robotColor, direction) {
+    const cellSpan = document.createElement('span');
+    cellSpan.classList.toggle('grid-cell');
+    cellSpan.classList.toggle('empty-grid-cell');
+
+    const robotSpan = document.createElement('span');
+    robotSpan.classList.toggle('robot');
+    if (robotColor === GREEN_ROBOT) {
+      robotSpan.classList.toggle('green-robot');
+    } else if (robotColor === RED_ROBOT) {
+      robotSpan.classList.toggle('red-robot');
+    } else if (robotColor === BLUE_ROBOT) {
+      robotSpan.classList.toggle('blue-robot');
+    } else if (robotColor === YELLOW_ROBOT) {
+      robotSpan.classList.toggle('yellow-robot');
+    }
+
+    robotSpan.innerHTML = this.moveToString(direction);
+
+    cellSpan.appendChild(robotSpan);
+
+    return cellSpan;
+  }
+
   drawSolution(solution) {
     // Draw the path.
     if (solution !== undefined) {
       // Clear the contnts of the solution div.
       const solutionDiv = document.getElementById("solution");
-      this.clearSolutionDiv(solutionDiv);
+      this.clearDiv(solutionDiv);
       solutionDiv.innerHTML = "Found solution: <br />";
 
       for (let i = 0; i < solution.length; ++i) {
         const robotColor = solution[i][0];
         const direction = solution[i][1];
-
-        const cellSpan = document.createElement('span');
-        cellSpan.classList.toggle('grid-cell');
-        cellSpan.classList.toggle('empty-grid-cell');
-
-        const robotSpan = document.createElement('span');
-        robotSpan.classList.toggle('robot');
-        if (robotColor === GREEN_ROBOT) {
-          robotSpan.classList.toggle('green-robot');
-        } else if (robotColor === RED_ROBOT) {
-          robotSpan.classList.toggle('red-robot');
-        } else if (robotColor === BLUE_ROBOT) {
-          robotSpan.classList.toggle('blue-robot');
-        } else if (robotColor === YELLOW_ROBOT) {
-          robotSpan.classList.toggle('yellow-robot');
-        }
-
-        robotSpan.innerHTML = this.moveToString(direction);
-
-        cellSpan.appendChild(robotSpan);
+        const cellSpan = this.pathComponentSpan(robotColor, direction);
         solutionDiv.appendChild(cellSpan);
       }
     }

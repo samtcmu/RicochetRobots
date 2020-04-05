@@ -13,11 +13,7 @@ class RicochetRobots {
     this.board.pickNextTarget();
     this.board.selectedRobotColor = undefined;
 
-    this.currentRobots = {}
-    const robots = this.board.getRobots()
-    for (let key in robots) {
-      this.currentRobots[key] = {...robots[key]};
-    }
+    this.currentRobots = this.deepCopyRobots(this.board.getRobots());
   }
 
   selectNewTarget() {
@@ -29,11 +25,7 @@ class RicochetRobots {
     this.clearSolutionDiv(solutionDiv);
 
     // Save the current robots for the reset function.
-    this.currentRobots = {}
-    const robots = this.board.getRobots()
-    for (let key in robots) {
-      this.currentRobots[key] = {...robots[key]};
-    }
+    this.currentRobots = this.deepCopyRobots(this.board.getRobots());
   }
 
   resetRobots() {

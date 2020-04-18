@@ -1,0 +1,23 @@
+{
+  "name": "ricochet-robots",
+  "version": "0.0.1",
+  "description": "Ricochet Robots Board Game",
+  "main": "server/server.js",
+  "dependencies": {
+    "express": "^4.17.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "start": "node server/server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/samtcmu/RicochetRobots.git"
+  },
+  "author": "samt@alumni.cmu.edu",
+  "bugs": {
+    "url": "https://github.com/samtcmu/RicochetRobots/issues"
+  },
+  "homepage": "https://github.com/samtcmu/RicochetRobots#readme"
+}

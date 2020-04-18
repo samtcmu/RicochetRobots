@@ -4,11 +4,12 @@
   "description": "Ricochet Robots Board Game",
   "main": "server/server.js",
   "dependencies": {
-    "express": "^4.17.1"
+    "express": "^4.17.1",
+    "socket.io": "^2.3.0"
   },
   "devDependencies": {},
   "scripts": {
-    "start": "node server/server.js",
+    "start": "node server/server.js 8000",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {

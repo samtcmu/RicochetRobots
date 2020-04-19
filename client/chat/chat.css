@@ -16,11 +16,20 @@ form {
     width: 100%;
 }
 
+form#username-form {
+    left: 0%;
+}
+
+form#message-form {
+    left: 50%;
+}
+
 form input {
     border: 0;
     padding: 10px;
-    width: 90%;
+    width: 40%;
     margin-right: 0.5%;
+    margin-bottom: 0.5%;
 }
 
 form button {

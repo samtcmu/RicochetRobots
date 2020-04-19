@@ -21,15 +21,40 @@ const server = app.listen(port, function () {
 // Create the websocket server.
 const io = socket_io(server);
 
+const users = {}
 const chats = []
 
 io.on("connection", (socket) => {
+    console.log('user connected');
+
+    socket.on("set-username", (username) => {
+        for (socket_id in users) {
+            if ((socket.id === socket_id) || (users[socket_id] === username)) {
+                io.to(socket.id).emit(
+                    "unable-to-set-username", `username "${username}" is taken.`);
+                return;
+            }
+        }
+        users[socket.id] = username;
+    })
+
     // When receiving a chat message broadcast to all other peers connect to
     // this websocket server.
     socket.on("chat message", (message) => {
-        chats.push(message);
-        io.emit("chat message", message);
+        const chatEntry = {
+            user: users[socket.id],
+            message: message,
+        }
+        chats.push(chatEntry);
+        io.emit("chat message", chatEntry);
     });
 
     io.to(socket.id).emit("chat history", JSON.stringify(chats));
+
+    socket.on('disconnect', () => {
+        // Remove the disconnecting socket's username mapping.
+        delete users[socket.id];
+
+        console.log('user disconnected');
+    });
 });

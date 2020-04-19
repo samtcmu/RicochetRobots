@@ -11,10 +11,20 @@ function sendMessage(event) {
     return false;
 }
 
-function addMessage(message) {
+function setUsername(event) {
+    // Prevent the page from reloading.
+    event.preventDefault();
+
+    const message = document.getElementById("username");
+    socket.emit('set-username', message.value);
+
+    return false;
+}
+
+function addMessage(chatEntry) {
     const messages = document.getElementById("messages");
     const messageListItem = document.createElement("li");
-    messageListItem.innerHTML = message;
+    messageListItem.innerHTML = `${chatEntry.user}: ${chatEntry.message}`;
     messages.appendChild(messageListItem);
 }
 
@@ -26,9 +36,12 @@ function processHistory(history) {
 }
 
 function loadChatApp() {
-    const form = document.getElementById("message-form");
-    form.onsubmit = sendMessage;
+    const message_form = document.getElementById("message-form");
+    message_form.onsubmit = sendMessage;
+    const username_form = document.getElementById("username-form");
+    username_form.onsubmit = setUsername;
 
     socket.on('chat message', addMessage);
     socket.on('chat history', processHistory);
+    socket.on('unable-to-set-username', (m) => alert(m));
 }

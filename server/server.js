@@ -5,10 +5,10 @@ const socket_io = require("socket.io")
 const app = express();
 
 app.get("/", (req, res) => {
-    res.sendFile(path.join(__dirname, "../client/chat/index.html"));
+    res.sendFile(path.join(__dirname, "../client/index.html"));
 });
 
-app.use(express.static(path.join(__dirname, "../client/chat")));
+app.use(express.static(path.join(__dirname, "../client")));
 
 const port = process.argv[2]
 const server = app.listen(port, function () {

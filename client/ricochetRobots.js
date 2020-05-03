@@ -1,14 +1,16 @@
-import boardElements from "./boardElements.js";
+import * as boardElements from "./boardElements.js";
+import * as gridCell from "./gridcell.js";
+import * as ricochetGrid from "./ricochetGrid.js";
 
 const robotIdMap = {};
-robotIdMap[GREEN_ROBOT] = 'green-robot';
-robotIdMap[RED_ROBOT] = 'red-robot';
-robotIdMap[BLUE_ROBOT] = 'blue-robot';
-robotIdMap[YELLOW_ROBOT] = 'yellow-robot';
+robotIdMap[ricochetGrid.GREEN_ROBOT] = 'green-robot';
+robotIdMap[ricochetGrid.RED_ROBOT] = 'red-robot';
+robotIdMap[ricochetGrid.BLUE_ROBOT] = 'blue-robot';
+robotIdMap[ricochetGrid.YELLOW_ROBOT] = 'yellow-robot';
 
 class RicochetRobots {
   constructor() {
-    this.board = new RicochetGrid(16, 16);
+    this.board = new ricochetGrid.RicochetGrid(16, 16);
     this.board.setWalls(boardElements.walls);
     this.board.setTargets(boardElements.targets);
     this.board.initializedRobotPositions();
@@ -133,13 +135,13 @@ class RicochetRobots {
   keyboardHandler(key) {
     let moveDirection = null;
     if (key === 'ArrowUp') {
-      moveDirection = MOVE_UP;
+      moveDirection = ricochetGrid.MOVE_UP;
     } else if (key === 'ArrowDown') {
-      moveDirection = MOVE_DOWN;
+      moveDirection = ricochetGrid.MOVE_DOWN;
     } else if (key === 'ArrowLeft') {
-      moveDirection = MOVE_LEFT;
+      moveDirection = ricochetGrid.MOVE_LEFT;
     } else if (key === 'ArrowRight') {
-      moveDirection = MOVE_RIGHT;
+      moveDirection = ricochetGrid.MOVE_RIGHT;
     }
 
     if (moveDirection !== null) {
@@ -158,13 +160,13 @@ class RicochetRobots {
   robotToString(robotId) {
     let output = "";
 
-    if (robotId == GREEN_ROBOT) {
+    if (robotId == ricochetGrid.GREEN_ROBOT) {
       output = "green robot";
-    } else if (robotId == RED_ROBOT) {
+    } else if (robotId == ricochetGrid.RED_ROBOT) {
       output = "red robot";
-    } else if (robotId == BLUE_ROBOT) {
+    } else if (robotId == ricochetGrid.BLUE_ROBOT) {
       output = "blue robot";
-    } else if (robotId == YELLOW_ROBOT) {
+    } else if (robotId == ricochetGrid.YELLOW_ROBOT) {
       output = "yellow robot";
     }
 
@@ -174,13 +176,13 @@ class RicochetRobots {
   moveToString(move) {
     let output = "";
 
-    if (move == UP) {
+    if (move == gridCell.UP) {
       output = "&uarr;";
-    } else if (move == DOWN) {
+    } else if (move == gridCell.DOWN) {
       output = "&darr;";
-    } else if (move == RIGHT) {
+    } else if (move == gridCell.RIGHT) {
       output = "&rarr;";
-    } else if (move == LEFT) {
+    } else if (move == gridCell.LEFT) {
       output = "&larr;";
     }
 
@@ -222,13 +224,13 @@ class RicochetRobots {
 
     const robotSpan = document.createElement('span');
     robotSpan.classList.toggle('robot');
-    if (robotColor === GREEN_ROBOT) {
+    if (robotColor === ricochetGrid.GREEN_ROBOT) {
       robotSpan.classList.toggle('green-robot');
-    } else if (robotColor === RED_ROBOT) {
+    } else if (robotColor === ricochetGrid.RED_ROBOT) {
       robotSpan.classList.toggle('red-robot');
-    } else if (robotColor === BLUE_ROBOT) {
+    } else if (robotColor === ricochetGrid.BLUE_ROBOT) {
       robotSpan.classList.toggle('blue-robot');
-    } else if (robotColor === YELLOW_ROBOT) {
+    } else if (robotColor === ricochetGrid.YELLOW_ROBOT) {
       robotSpan.classList.toggle('yellow-robot');
     }
 
@@ -371,7 +373,7 @@ class RicochetRobots {
 
         // Draw cell.
         newSpan.classList.toggle('grid-cell');
-        if (this.board.getValue(r, c) === INACCESSABLE_CELL) {
+        if (this.board.getValue(r, c) === gridCell.INACCESSABLE_CELL) {
           newSpan.classList.toggle('inaccessable-grid-cell');
         } else {
           newSpan.classList.toggle('empty-grid-cell');
@@ -379,16 +381,16 @@ class RicochetRobots {
 
         // Draw walls.
         let cellWalls = this.board.getWalls(r, c);
-        if (cellWalls.includes(UP)) {
+        if (cellWalls.includes(gridCell.UP)) {
           newSpan.classList.toggle('top-wall');
         }
-        if (cellWalls.includes(DOWN)) {
+        if (cellWalls.includes(gridCell.DOWN)) {
           newSpan.classList.toggle('bottom-wall');
         }
-        if (cellWalls.includes(LEFT)) {
+        if (cellWalls.includes(gridCell.LEFT)) {
           newSpan.classList.toggle('left-wall');
         }
-        if (cellWalls.includes(RIGHT)) {
+        if (cellWalls.includes(gridCell.RIGHT)) {
           newSpan.classList.toggle('right-wall');
         }
 
@@ -407,27 +409,27 @@ class RicochetRobots {
 
       let targetSpan = document.createElement('span');
 
-      if (targetColor === RED_TARGET) {
+      if (targetColor === gridCell.RED_TARGET) {
         targetSpan.classList.toggle('red-target');
-      } else if (targetColor === GREEN_TARGET) {
+      } else if (targetColor === gridCell.GREEN_TARGET) {
         targetSpan.classList.toggle('green-target');
-      } else if (targetColor === BLUE_TARGET) {
+      } else if (targetColor === gridCell.BLUE_TARGET) {
         targetSpan.classList.toggle('blue-target');
-      } else if (targetColor === YELLOW_TARGET) {
+      } else if (targetColor === gridCell.YELLOW_TARGET) {
         targetSpan.classList.toggle('yellow-target');
-      } else if (targetColor === WILD_TARGET) {
+      } else if (targetColor === gridCell.WILD_TARGET) {
         targetSpan.classList.toggle('wild-target');
       }
 
-      if (targetShape === SQUARE_TARGET) {
+      if (targetShape === gridCell.SQUARE_TARGET) {
         targetSpan.classList.toggle('square-target');
-      } else if (targetShape === CRICLE_TARGET) {
+      } else if (targetShape === gridCell.CRICLE_TARGET) {
         targetSpan.classList.toggle('circle-target');
-      } else if (targetShape === TRIANGLE_TARGET) {
+      } else if (targetShape === gridCell.TRIANGLE_TARGET) {
         targetSpan.classList.toggle('triangle-target');
-      } else if (targetShape === HEXAGON_TARGET) {
+      } else if (targetShape === gridCell.HEXAGON_TARGET) {
         targetSpan.classList.toggle('hexagon-target');
-      } else if (targetShape === VORTEX_TARGET) {
+      } else if (targetShape === gridCell.VORTEX_TARGET) {
         targetSpan.classList.toggle('vortex-target');
       }
 
@@ -456,26 +458,26 @@ class RicochetRobots {
         // Select a the clicked robot.
         event.target.classList.toggle('selected-robot');
         if (event.target.id === 'green-robot') {
-          this.board.selectedRobotColor = GREEN_ROBOT;
+          this.board.selectedRobotColor = ricochetGrid.GREEN_ROBOT;
         } else if (event.target.id === 'red-robot') {
-          this.board.selectedRobotColor = RED_ROBOT;
+          this.board.selectedRobotColor = ricochetGrid.RED_ROBOT;
         } else if (event.target.id === 'blue-robot') {
-          this.board.selectedRobotColor = BLUE_ROBOT;
+          this.board.selectedRobotColor = ricochetGrid.BLUE_ROBOT;
         } else if (event.target.id === 'yellow-robot') {
-          this.board.selectedRobotColor = YELLOW_ROBOT;
+          this.board.selectedRobotColor = ricochetGrid.YELLOW_ROBOT;
         }
       });
 
-      if (robotColor === GREEN_ROBOT) {
+      if (robotColor === ricochetGrid.GREEN_ROBOT) {
         robotSpan.id = 'green-robot';
         robotSpan.classList.toggle('green-robot');
-      } else if (robotColor === RED_ROBOT) {
+      } else if (robotColor === ricochetGrid.RED_ROBOT) {
         robotSpan.id = 'red-robot';
         robotSpan.classList.toggle('red-robot');
-      } else if (robotColor === BLUE_ROBOT) {
+      } else if (robotColor === ricochetGrid.BLUE_ROBOT) {
         robotSpan.id = 'blue-robot';
         robotSpan.classList.toggle('blue-robot');
-      } else if (robotColor === YELLOW_ROBOT) {
+      } else if (robotColor === ricochetGrid.YELLOW_ROBOT) {
         robotSpan.id = 'yellow-robot';
         robotSpan.classList.toggle('yellow-robot');
       }

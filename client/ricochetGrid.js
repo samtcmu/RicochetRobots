@@ -1,26 +1,28 @@
+import * as gridCell from "./gridcell.js";
+
 // import GridCell from './gridCell';
 // Possible colors for robots.
-const GREEN_ROBOT = 0;
-const RED_ROBOT = 1;
-const BLUE_ROBOT = 2;
-const YELLOW_ROBOT = 3;
+export const GREEN_ROBOT = 0;
+export const RED_ROBOT = 1;
+export const BLUE_ROBOT = 2;
+export const YELLOW_ROBOT = 3;
 
 // Maps robot color to target color.
 const targetRobotColorMap = {};
-targetRobotColorMap[GREEN_TARGET] = GREEN_ROBOT;
-targetRobotColorMap[RED_TARGET] = RED_ROBOT;
-targetRobotColorMap[BLUE_TARGET] = BLUE_ROBOT;
-targetRobotColorMap[YELLOW_TARGET] = YELLOW_ROBOT;
-targetRobotColorMap[WILD_TARGET] = undefined;
+targetRobotColorMap[gridCell.GREEN_TARGET] = GREEN_ROBOT;
+targetRobotColorMap[gridCell.RED_TARGET] = RED_ROBOT;
+targetRobotColorMap[gridCell.BLUE_TARGET] = BLUE_ROBOT;
+targetRobotColorMap[gridCell.YELLOW_TARGET] = YELLOW_ROBOT;
+targetRobotColorMap[gridCell.WILD_TARGET] = undefined;
 
 // Move Directions
-const MOVE_UP = 0;
-const MOVE_DOWN = 1;
-const MOVE_RIGHT = 2;
-const MOVE_LEFT = 3;
+export const MOVE_UP = 0;
+export const MOVE_DOWN = 1;
+export const MOVE_RIGHT = 2;
+export const MOVE_LEFT = 3;
 
 // The class will define the Ricochet Grid
-class RicochetGrid {
+export class RicochetGrid {
   constructor(rows, columns) {
     this.rows = rows;
     this.columns = columns;
@@ -51,7 +53,7 @@ class RicochetGrid {
       let row = [];
       for (let c = 0; c < this.columns; ++c) {
         // push a new grid cell into each column
-        row.push(new GridCell());
+        row.push(new gridCell.GridCell());
       }
       this.grid.push(row);
     }
@@ -60,36 +62,36 @@ class RicochetGrid {
     // the inaccessableCells are the four cells in the center of the board.
     let centerPoint = Math.floor(this.rows / 2);
 
-    this.setValue(centerPoint - 1, centerPoint - 1, INACCESSABLE_CELL);
-    this.setValue(centerPoint - 1, centerPoint, INACCESSABLE_CELL);
-    this.setValue(centerPoint, centerPoint - 1, INACCESSABLE_CELL);
-    this.setValue(centerPoint, centerPoint, INACCESSABLE_CELL);
+    this.setValue(centerPoint - 1, centerPoint - 1, gridCell.INACCESSABLE_CELL);
+    this.setValue(centerPoint - 1, centerPoint, gridCell.INACCESSABLE_CELL);
+    this.setValue(centerPoint, centerPoint - 1, gridCell.INACCESSABLE_CELL);
+    this.setValue(centerPoint, centerPoint, gridCell.INACCESSABLE_CELL);
 
     // set up board walls
     // The top and bottom boarders
     for (let c = 0; c < this.columns; c++) {
-      this.setWall(0, c, UP);
-      this.setWall(this.rows - 1, c, DOWN);
+      this.setWall(0, c, gridCell.UP);
+      this.setWall(this.rows - 1, c, gridCell.DOWN);
     }
 
     // The left and right boarders
     for (let r = 0; r < this.rows; r++) {
-      this.setWall(r, 0, LEFT);
-      this.setWall(r, this.columns - 1, RIGHT);
+      this.setWall(r, 0, gridCell.LEFT);
+      this.setWall(r, this.columns - 1, gridCell.RIGHT);
     }
 
     // set up inaccessable walls
-    this.setWall(centerPoint - 1, centerPoint - 1, LEFT);
-    this.setWall(centerPoint - 1, centerPoint - 1, UP);
+    this.setWall(centerPoint - 1, centerPoint - 1, gridCell.LEFT);
+    this.setWall(centerPoint - 1, centerPoint - 1, gridCell.UP);
 
-    this.setWall(centerPoint - 1, centerPoint, UP);
-    this.setWall(centerPoint - 1, centerPoint, RIGHT);
+    this.setWall(centerPoint - 1, centerPoint, gridCell.UP);
+    this.setWall(centerPoint - 1, centerPoint, gridCell.RIGHT);
 
-    this.setWall(centerPoint, centerPoint - 1, LEFT);
-    this.setWall(centerPoint, centerPoint - 1, DOWN);
+    this.setWall(centerPoint, centerPoint - 1, gridCell.LEFT);
+    this.setWall(centerPoint, centerPoint - 1, gridCell.DOWN);
 
-    this.setWall(centerPoint, centerPoint, RIGHT);
-    this.setWall(centerPoint, centerPoint, DOWN);
+    this.setWall(centerPoint, centerPoint, gridCell.RIGHT);
+    this.setWall(centerPoint, centerPoint, gridCell.DOWN);
 
     // A list of targets.
     this.targets = [];
@@ -127,14 +129,14 @@ class RicochetGrid {
   // setWall function will set the wall(s) in the cell.
   setWall(row, column, side) {
     this.grid[row][column].setWallOnCell(side);
-    if (side === LEFT && column > 0) {
-      this.grid[row][column - 1].setWallOnCell(RIGHT);
-    } else if (side === RIGHT && column < this.columns - 1) {
-      this.grid[row][column + 1].setWallOnCell(LEFT);
-    } else if (side === UP && row > 0) {
-      this.grid[row - 1][column].setWallOnCell(DOWN);
-    } else if (side === DOWN && row < this.rows - 1) {
-      this.grid[row + 1][column].setWallOnCell(UP);
+    if (side === gridCell.LEFT && column > 0) {
+      this.grid[row][column - 1].setWallOnCell(gridCell.RIGHT);
+    } else if (side === gridCell.RIGHT && column < this.columns - 1) {
+      this.grid[row][column + 1].setWallOnCell(gridCell.LEFT);
+    } else if (side === gridCell.UP && row > 0) {
+      this.grid[row - 1][column].setWallOnCell(gridCell.DOWN);
+    } else if (side === gridCell.DOWN && row < this.rows - 1) {
+      this.grid[row + 1][column].setWallOnCell(gridCell.UP);
     }
   }
 
@@ -148,13 +150,13 @@ class RicochetGrid {
     for (let key in this.robots) {
       let row = this.generateRandomNumber(this.rows);
       let column = this.generateRandomNumber(this.columns);
-      while (this.getValue(row, column) !== EMPTY_CELL) {
+      while (this.getValue(row, column) !== gridCell.EMPTY_CELL) {
         row = this.generateRandomNumber(this.rows);
         column = this.generateRandomNumber(this.columns);
       }
       this.robots[key].row = row;
       this.robots[key].column = column;
-      this.setValue(row, column, ROBOT_CELL);
+      this.setValue(row, column, gridCell.ROBOT_CELL);
     }
   }
 
@@ -162,7 +164,7 @@ class RicochetGrid {
   _setRobotPostion(robotColor, row, column) {
     this.robots[robotColor].row = row;
     this.robots[robotColor].column = column;
-    this.setValue(row, column, ROBOT_CELL);
+    this.setValue(row, column, gridCell.ROBOT_CELL);
   }
 
   getRobots() {
@@ -223,26 +225,26 @@ class RicochetGrid {
     let column = robot.column;
     let robotWalls = this.grid[robot.row][robot.column].getWalls();
     if (
-      !robotWalls.includes(UP) &&
-      this.getValue(row - 1, column) === EMPTY_CELL
+      !robotWalls.includes(gridCell.UP) &&
+      this.getValue(row - 1, column) === gridCell.EMPTY_CELL
     ) {
       possibleMoves.push(MOVE_UP);
     }
     if (
-      !robotWalls.includes(DOWN) &&
-      this.getValue(row + 1, column) === EMPTY_CELL
+      !robotWalls.includes(gridCell.DOWN) &&
+      this.getValue(row + 1, column) === gridCell.EMPTY_CELL
     ) {
       possibleMoves.push(MOVE_DOWN);
     }
     if (
-      !robotWalls.includes(LEFT) &&
-      this.getValue(row, column - 1) === EMPTY_CELL
+      !robotWalls.includes(gridCell.LEFT) &&
+      this.getValue(row, column - 1) === gridCell.EMPTY_CELL
     ) {
       possibleMoves.push(MOVE_LEFT);
     }
     if (
-      !robotWalls.includes(RIGHT) &&
-      this.getValue(row, column + 1) === EMPTY_CELL
+      !robotWalls.includes(gridCell.RIGHT) &&
+      this.getValue(row, column + 1) === gridCell.EMPTY_CELL
     ) {
       possibleMoves.push(MOVE_RIGHT);
     }
@@ -254,7 +256,7 @@ class RicochetGrid {
     // get current location of the robot
     let initialRow = this.robots[robotColor].row;
     let initialColumn = this.robots[robotColor].column;
-    this.setValue(initialRow, initialColumn, EMPTY_CELL);
+    this.setValue(initialRow, initialColumn, gridCell.EMPTY_CELL);
     while (this.movesForRobot(robotColor).includes(direction)) {
       if (direction === MOVE_UP) {
         // update the row of the robot.
@@ -270,7 +272,7 @@ class RicochetGrid {
     this.setValue(
       this.robots[robotColor].row,
       this.robots[robotColor].column,
-      ROBOT_CELL
+      gridCell.ROBOT_CELL
     );
   }
   // moveAllRobots for BTS.
@@ -278,13 +280,13 @@ class RicochetGrid {
     for (let key in newRobotsPostions) {
       let initialRow = this.robots[key].row;
       let initialColumn = this.robots[key].column;
-      this.setValue(initialRow, initialColumn, EMPTY_CELL);
+      this.setValue(initialRow, initialColumn, gridCell.EMPTY_CELL);
 
       let newRow = newRobotsPostions[key].row;
       let newColumn = newRobotsPostions[key].column;
       this.robots[key].row = newRow;
       this.robots[key].column = newColumn;
-      this.setValue(newRow, newColumn, ROBOT_CELL);
+      this.setValue(newRow, newColumn, gridCell.ROBOT_CELL);
     }
   }
 
@@ -295,11 +297,11 @@ class RicochetGrid {
     let targetRow = this.currentTarget.row;
     let targetColumn = this.currentTarget.column;
     // If there is not robot in the target cell, the target has not been reached and function will return false.
-    if (this.getValue(targetRow, targetColumn) !== ROBOT_CELL) {
+    if (this.getValue(targetRow, targetColumn) !== gridCell.ROBOT_CELL) {
       return false;
     }
     // We know that there is a robot in the target cell. Any robot can reach the wild target.
-    if (targetColor === WILD_TARGET) {
+    if (targetColor === gridCell.WILD_TARGET) {
       return true;
     }
 
@@ -310,5 +312,3 @@ class RicochetGrid {
     );
   }
 }
-
-// export default RicochetGrid;

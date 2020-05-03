@@ -1,30 +1,30 @@
 // Possible values for a cell.
-const EMPTY_CELL = 0;
-const INACCESSABLE_CELL = 1;
-const ROBOT_CELL = 2;
+export const EMPTY_CELL = 0;
+export const INACCESSABLE_CELL = 1;
+export const ROBOT_CELL = 2;
 
 // Side of the Wall.
-const UP = 0;
-const DOWN = 1;
-const RIGHT = 2;
-const LEFT = 3;
+export const UP = 0;
+export const DOWN = 1;
+export const RIGHT = 2;
+export const LEFT = 3;
 
 // Color of target.
-const GREEN_TARGET = 0;
-const RED_TARGET = 1;
-const BLUE_TARGET = 2;
-const YELLOW_TARGET = 3;
-const WILD_TARGET = 4;
+export const GREEN_TARGET = 0;
+export const RED_TARGET = 1;
+export const BLUE_TARGET = 2;
+export const YELLOW_TARGET = 3;
+export const WILD_TARGET = 4;
 
 // Shape of target.
-const CRICLE_TARGET = 0;
-const TRIANGLE_TARGET = 1;
-const SQUARE_TARGET = 2;
-const HEXAGON_TARGET = 3;
-const VORTEX_TARGET = 4;
+export const CRICLE_TARGET = 0;
+export const TRIANGLE_TARGET = 1;
+export const SQUARE_TARGET = 2;
+export const HEXAGON_TARGET = 3;
+export const VORTEX_TARGET = 4;
 
 // The class will define the properties of a cell in the grid.
-class GridCell {
+export class GridCell {
   constructor() {
     this.value = EMPTY_CELL;
     // The target is unique. It has a color and a shape. //

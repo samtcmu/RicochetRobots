@@ -506,6 +506,7 @@ function loadApp() {
   playerNode.classList.toggle("player");
   playerNode.textContent = "player name (click to edit)";
   playerNode.contentEditable = true;
+  playerNode.spellcheck = false;
   playerNode.id = socket.id;
   playerNode.addEventListener('keydown', event => {
     if (event.key === "Enter") {

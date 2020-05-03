@@ -11,8 +11,7 @@
         <link rel="stylesheet" href="ricochetRobots.css">
         <script type="text/javascript" src="gridCell.js"></script>
         <script type="text/javascript" src="ricochetGrid.js"></script>
-        <script type="text/javascript" src="boardElements.js"></script>
-        <script type="text/javascript" src="ricochetRobots.js"></script>
+        <script type="module" src="ricochetRobots.js"></script>
     </head>
     <body onload="loadApp()">
         <div id="container">
@@ -39,39 +38,29 @@
                             </form>
                         </div>
                     </div>
-                    <div id="right-panel-section">
-                        <div class="right-panel-section-title">
-                            Old Controls
-                        </div>
-                        <div>
-                            <button onclick="ricochetRobots.solveWithBfs()">BFS SOLVE</button>
-                            <br />
-                            <button onclick="ricochetRobots.solveWithDfs()">DFS SOLVE</button>
-                            <br />
-                            <button onclick="ricochetRobots.selectNewTarget()">NEW TARGET</button>
-                            <br />
-                            <button onclick="ricochetRobots.resetRobots()">RESET</button>
-                            <br />
-                            <button onclick="ricochetRobots.startCountdown()">START COUNTDOWN</button>
-                        </div>
-                        <div id="solution">
-                            <!-- HTML print out of solution will go here. -->
-                        </div>
-                        <div id="path">
-                            <!-- HTML print out of the current path will go here. -->
-                        </div>
-                        <div id="countdown-timer">
-                        </div>
-                    </div>
                 </div>
                 <div id="left-panel">
                     <div id="grid-canvas">
                         <!-- HTML print out of grid will go here. -->
                     </div>
                 </div>
-            </div>
-            <div id="bottom-panel">
-                by Angela Vuong and Sam Tetruashvili
+                <div id="bottom-panel">
+                    <div>
+                        <button onclick="ricochetRobots.solveWithBfs()">BFS SOLVE</button>
+                        <button onclick="ricochetRobots.solveWithDfs()">DFS SOLVE</button>
+                        <button onclick="ricochetRobots.selectNewTarget()">NEW TARGET</button>
+                        <button onclick="ricochetRobots.resetRobots()">RESET</button>
+                        <button onclick="ricochetRobots.startCountdown()">START COUNTDOWN</button>
+                    </div>
+                    <div id="solution">
+                        <!-- HTML print out of solution will go here. -->
+                    </div>
+                    <div id="path">
+                        <!-- HTML print out of the current path will go here. -->
+                    </div>
+                    <div id="countdown-timer">
+                    </div>
+                </div>
             </div>
         </div>
     </body>

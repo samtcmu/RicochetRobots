@@ -1,3 +1,5 @@
+import boardElements from "./boardElements.js";
+
 const robotIdMap = {};
 robotIdMap[GREEN_ROBOT] = 'green-robot';
 robotIdMap[RED_ROBOT] = 'red-robot';
@@ -7,8 +9,8 @@ robotIdMap[YELLOW_ROBOT] = 'yellow-robot';
 class RicochetRobots {
   constructor() {
     this.board = new RicochetGrid(16, 16);
-    this.board.setWalls(walls);
-    this.board.setTargets(targets);
+    this.board.setWalls(boardElements.walls);
+    this.board.setTargets(boardElements.targets);
     this.board.initializedRobotPositions();
     this.board.pickNextTarget();
     this.board.selectedRobotColor = undefined;
@@ -489,15 +491,15 @@ class RicochetRobots {
   }
 }
 
-let ricochetRobots = undefined;
+window.ricochetRobots = undefined;
 const socket = io();
 
-function loadApp() {
-  ricochetRobots = new RicochetRobots();
-  ricochetRobots.draw(document.getElementById('grid-canvas'));
+window.loadApp = function loadApp() {
+  window.ricochetRobots = new RicochetRobots();
+  window.ricochetRobots.draw(document.getElementById('grid-canvas'));
   document.addEventListener('keydown', event => {
     if (event.target.nodeName == "BODY") {
-      ricochetRobots.keyboardHandler(event.key);
+      window.ricochetRobots.keyboardHandler(event.key);
     }
   });
 
@@ -520,7 +522,7 @@ function loadApp() {
 
   socket.on("players", (players) => {
     playerNode.id = socket.id;
-    for (socketId in players) {
+    for (let socketId in players) {
       let playerNodeToUpdate = document.getElementById(socketId);
       if (playerNodeToUpdate === null) {
         playerNodeToUpdate = document.createElement("li");

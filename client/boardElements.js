@@ -1,4 +1,4 @@
-let walls = [
+const walls = [
   { row: 0, column: 2, side: RIGHT },
   { row: 0, column: 11, side: RIGHT },
   { row: 1, column: 5, side: LEFT },
@@ -43,7 +43,7 @@ let walls = [
   { row: 15, column: 13, side: RIGHT },
 ];
 
-let targets = [
+const targets = [
   { row: 1, column: 5, color: BLUE_TARGET, shape: CRICLE_TARGET },
   { row: 2, column: 7, color: WILD_TARGET, shape: VORTEX_TARGET },
   { row: 2, column: 11, color: RED_TARGET, shape: SQUARE_TARGET },
@@ -62,3 +62,8 @@ let targets = [
   { row: 14, column: 2, color: GREEN_TARGET, shape: TRIANGLE_TARGET },
   { row: 14, column: 11, color: GREEN_TARGET, shape: CRICLE_TARGET },
 ];
+
+export default {
+  walls: walls,
+  targets: targets,
+};

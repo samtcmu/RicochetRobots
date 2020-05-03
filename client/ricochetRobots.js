@@ -554,5 +554,6 @@ function loadApp() {
     messageNode.classList.toggle("message");
     messageNode.textContent = `${message.sender}: ${message.content}`;
     messageList.appendChild(messageNode);
+    messageList.scrollTop = messageList.scrollHeight;
   });
 }

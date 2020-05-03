@@ -1,14 +1,19 @@
-const path = require("path");
-const express = require("express");
-const socket_io = require("socket.io")
+import * as path from "path";
+import express from "express";
+import socket_io from "socket.io";
+
+import * as ricochetGrid from "../client/ricochetGrid.js";
 
 const app = express();
 
+const dirname = path.resolve();
 app.get("/", (req, res) => {
-    res.sendFile(path.join(__dirname, "../client/index.html"));
+    // This paths is relative to the directory where `npm start` is run.
+    res.sendFile(path.join(dirname, "client/index.html"));
 });
 
-app.use(express.static(path.join(__dirname, "../client")));
+// This paths is relative to the directory where `npm start` is run.
+app.use(express.static(path.join(dirname, "client")));
 
 const port = process.argv[2]
 const server = app.listen(port, function () {

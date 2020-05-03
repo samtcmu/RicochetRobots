@@ -4,6 +4,81 @@ body {
     font-size: 14px;
 }
 
+div#container {
+    width: 800px;
+    margin: auto;
+}
+
+div#header {
+    font-size: 36px;
+    text-align: center;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+    border-bottom: 1px solid black;
+}
+
+div#panels {
+    width: 800px;
+}
+
+div#left-panel {
+    width: 560px;
+    border-right: 1px solid black;
+    padding: 10px;
+}
+
+div#right-panel {
+    width: 199px;
+    height: 100%;
+    float: right;
+    padding: 10px;
+}
+
+div#bottom-panel {
+    width: 800px;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid black;
+    text-align: center;
+    color: lightgray;
+}
+
+div.right-panel-title {
+    text-align: center;
+    font-size: 16px;
+    font-weight: bold;
+    border-bottom: 1px solid black;
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+
+div#players {
+}
+
+ul#players-list {
+    border: 1px solid black;
+    list-style-type: none;
+    padding: 0px;
+}
+
+li.player {
+    padding-top: 5px;
+    padding-bottom: 5px;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+div#players li:nth-child(1) {
+    /* Special styling for the first item in the player list that represents the
+       local user of the app. */
+    background: #FFFF00;
+}
+
+div#players li:nth-child(2n+3) {
+    background: #EEE;
+}
+
 div#grid-canvas {
     user-select: none;
     margin: auto;

@@ -490,10 +490,51 @@ class RicochetRobots {
 }
 
 let ricochetRobots = undefined;
+const players = [];
+const socket = io();
+
 function loadApp() {
   ricochetRobots = new RicochetRobots();
   ricochetRobots.draw(document.getElementById('grid-canvas'));
   document.addEventListener('keydown', event => {
-    ricochetRobots.keyboardHandler(event.key);
+    if (event.target.nodeName == "BODY") {
+      ricochetRobots.keyboardHandler(event.key);
+    }
+  });
+
+  const playersList = document.getElementById("players-list");
+  const playerNode = document.createElement("li");
+  playerNode.classList.toggle("player");
+  playerNode.textContent = "player name (click to edit)";
+  playerNode.contentEditable = true;
+  playerNode.id = socket.id;
+  playerNode.addEventListener('keydown', event => {
+    if (event.key === "Enter") {
+      socket.emit("set-player-name", {
+        name: event.target.textContent
+      });
+      event.preventDefault();
+    }
+  });
+  playersList.appendChild(playerNode);
+
+  socket.on("players", (players) => {
+    playerNode.id = socket.id;
+    for (socketId in players) {
+      let playerNodeToUpdate = document.getElementById(socketId);
+      if (playerNodeToUpdate === null) {
+        playerNodeToUpdate = document.createElement("li");
+        playerNodeToUpdate.classList.toggle("player");
+        playerNodeToUpdate.id = socketId;
+        playersList.appendChild(playerNodeToUpdate);
+      }
+
+      playerNodeToUpdate.textContent = players[socketId].name;
+    }
+  });
+
+  socket.on("player-disconnected", (playerSocketId) => {
+    let playerNodeToDelete = document.getElementById(playerSocketId);
+    playersList.removeChild(playerNodeToDelete);
   });
 }

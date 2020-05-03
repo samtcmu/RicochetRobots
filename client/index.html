@@ -5,6 +5,9 @@
         <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
         <meta content="utf-8" http-equiv="encoding">
 
+        <!-- External Dependencies -->
+        <script type="text/javascript" src="/socket.io/socket.io.js"></script>
+
         <link rel="stylesheet" href="ricochetRobots.css">
         <script type="text/javascript" src="gridCell.js"></script>
         <script type="text/javascript" src="ricochetGrid.js"></script>
@@ -12,23 +15,47 @@
         <script type="text/javascript" src="ricochetRobots.js"></script>
     </head>
     <body onload="loadApp()">
-        <div id="grid-canvas">
-            <!-- HTML print out of grid will go here. -->
-        </div>
-        <div>
-            <button onclick="ricochetRobots.solveWithBfs()">BFS SOLVE</button>
-            <button onclick="ricochetRobots.solveWithDfs()">DFS SOLVE</button>
-            <button onclick="ricochetRobots.selectNewTarget()">NEW TARGET</button>
-            <button onclick="ricochetRobots.resetRobots()">RESET</button>
-            <button onclick="ricochetRobots.startCountdown()">START COUNTDOWN</button>
-        </div>
-        <div id="solution">
-            <!-- HTML print out of solution will go here. -->
-        </div>
-        <div id="path">
-            <!-- HTML print out of the current path will go here. -->
-        </div>
-        <div id="countdown-timer">
+        <div id="container">
+            <div id="header">
+                Ricochet Robots
+            </div>
+            <div id="panels">
+                <div id="right-panel">
+                    <div>
+                        <button onclick="ricochetRobots.solveWithBfs()">BFS SOLVE</button>
+                        <br />
+                        <button onclick="ricochetRobots.solveWithDfs()">DFS SOLVE</button>
+                        <br />
+                        <button onclick="ricochetRobots.selectNewTarget()">NEW TARGET</button>
+                        <br />
+                        <button onclick="ricochetRobots.resetRobots()">RESET</button>
+                        <br />
+                        <button onclick="ricochetRobots.startCountdown()">START COUNTDOWN</button>
+                    </div>
+                    <div id="solution">
+                        <!-- HTML print out of solution will go here. -->
+                    </div>
+                    <div id="path">
+                        <!-- HTML print out of the current path will go here. -->
+                    </div>
+                    <div id="countdown-timer">
+                    </div>
+                    <div id="players">
+                        <div class="right-panel-title">
+                            Players
+                        </div>
+                        <ul id="players-list"></ul>
+                    </div>
+                </div>
+                <div id="left-panel">
+                    <div id="grid-canvas">
+                        <!-- HTML print out of grid will go here. -->
+                    </div>
+                </div>
+            </div>
+            <div id="bottom-panel">
+                by Angela Vuong and Sam Tetruashvili
+            </div>
         </div>
     </body>
 </html>

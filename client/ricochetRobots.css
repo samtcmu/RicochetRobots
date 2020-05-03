@@ -44,16 +44,16 @@ div#bottom-panel {
     color: lightgray;
 }
 
-div.right-panel-title {
+div#right-panel-section {
+}
+
+div.right-panel-section-title {
     text-align: center;
     font-size: 16px;
     font-weight: bold;
     border-bottom: 1px solid black;
     padding-top: 5px;
     padding-bottom: 5px;
-}
-
-div#players {
 }
 
 ul#players-list {
@@ -69,14 +69,42 @@ li.player {
     padding-right: 10px;
 }
 
-div#players li:nth-child(1) {
+ul#players-list li:nth-child(1) {
     /* Special styling for the first item in the player list that represents the
        local user of the app. */
     background: #FFFF00;
 }
 
-div#players li:nth-child(2n+3) {
+ul#players-list li:nth-child(2n+3) {
     background: #EEE;
+}
+
+div#chat {
+}
+
+ul#message-list {
+    border: 1px solid black;
+    list-style-type: none;
+    padding: 0px;
+    height: 200px;
+    overflow-y: auto;
+    margin-bottom: 0px;
+}
+
+li#message {
+    overflow-x: auto;
+}
+
+ul#message-list li:nth-child(odd) {
+    background: #EEE;
+}
+
+input#message-field {
+    width: 130px;
+}
+
+input#send-button {
+
 }
 
 div#grid-canvas {

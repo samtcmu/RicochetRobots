@@ -21,30 +21,47 @@
             </div>
             <div id="panels">
                 <div id="right-panel">
-                    <div>
-                        <button onclick="ricochetRobots.solveWithBfs()">BFS SOLVE</button>
-                        <br />
-                        <button onclick="ricochetRobots.solveWithDfs()">DFS SOLVE</button>
-                        <br />
-                        <button onclick="ricochetRobots.selectNewTarget()">NEW TARGET</button>
-                        <br />
-                        <button onclick="ricochetRobots.resetRobots()">RESET</button>
-                        <br />
-                        <button onclick="ricochetRobots.startCountdown()">START COUNTDOWN</button>
-                    </div>
-                    <div id="solution">
-                        <!-- HTML print out of solution will go here. -->
-                    </div>
-                    <div id="path">
-                        <!-- HTML print out of the current path will go here. -->
-                    </div>
-                    <div id="countdown-timer">
-                    </div>
-                    <div id="players">
-                        <div class="right-panel-title">
+                    <div id="right-panel-section">
+                        <div class="right-panel-section-title">
                             Players
                         </div>
                         <ul id="players-list"></ul>
+                    </div>
+                    <div id="right-panel-section">
+                        <div class="right-panel-section-title">
+                            Chat
+                        </div>
+                        <div id="chat">
+                            <ul id="message-list"></ul>
+                            <form id="send-message-form">
+                                <input type="text" id="message-field">
+                                <input type="submit" id="send-button" value="Send">
+                            </form>
+                        </div>
+                    </div>
+                    <div id="right-panel-section">
+                        <div class="right-panel-section-title">
+                            Old Controls
+                        </div>
+                        <div>
+                            <button onclick="ricochetRobots.solveWithBfs()">BFS SOLVE</button>
+                            <br />
+                            <button onclick="ricochetRobots.solveWithDfs()">DFS SOLVE</button>
+                            <br />
+                            <button onclick="ricochetRobots.selectNewTarget()">NEW TARGET</button>
+                            <br />
+                            <button onclick="ricochetRobots.resetRobots()">RESET</button>
+                            <br />
+                            <button onclick="ricochetRobots.startCountdown()">START COUNTDOWN</button>
+                        </div>
+                        <div id="solution">
+                            <!-- HTML print out of solution will go here. -->
+                        </div>
+                        <div id="path">
+                            <!-- HTML print out of the current path will go here. -->
+                        </div>
+                        <div id="countdown-timer">
+                        </div>
                     </div>
                 </div>
                 <div id="left-panel">

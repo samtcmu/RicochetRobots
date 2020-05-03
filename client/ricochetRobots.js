@@ -490,7 +490,6 @@ class RicochetRobots {
 }
 
 let ricochetRobots = undefined;
-const players = [];
 const socket = io();
 
 function loadApp() {
@@ -536,5 +535,24 @@ function loadApp() {
   socket.on("player-disconnected", (playerSocketId) => {
     let playerNodeToDelete = document.getElementById(playerSocketId);
     playersList.removeChild(playerNodeToDelete);
+  });
+
+  const sendMessageForm = document.getElementById("send-message-form");
+  sendMessageForm.addEventListener('submit', event => {
+    event.preventDefault();
+
+    let messageFieldNode = event.target.querySelector("input#message-field");
+    socket.emit("send-message", {
+       content: messageFieldNode.value,
+    });
+    messageFieldNode.value = "";
+  })
+
+  const messageList = document.getElementById("message-list");
+  socket.on("receive-message", (message) => {
+    let messageNode = document.createElement("li");
+    messageNode.classList.toggle("message");
+    messageNode.textContent = `${message.sender}: ${message.content}`;
+    messageList.appendChild(messageNode);
   });
 }

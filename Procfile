@@ -1,1 +1,1 @@
-web: cd client && python -m SimpleHTTPServer $PORT
+web: npm start

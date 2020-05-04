@@ -2,6 +2,7 @@ import * as path from "path";
 import express from "express";
 import socket_io from "socket.io";
 
+import * as boardElements from "../client/boardElements.js";
 import * as ricochetGrid from "../client/ricochetGrid.js";
 
 const app = express();
@@ -27,12 +28,18 @@ const server = app.listen(port, function () {
 const io = socket_io(server);
 
 const players = {};
+const board = new ricochetGrid.RicochetGrid(16, 16);
+board.setWalls(boardElements.walls);
+board.setTargets(boardElements.targets);
+board.initializedRobotPositions();
+board.pickNextTarget();
+board.selectedRobotColor = undefined;
 
 io.on("connection", (socket) => {
     console.log(`player [${socket.id}] connected`);
 
     socket.on("set-player-name", (player) => {
-        for (socket_id in players) {
+        for (let socket_id in players) {
             if (players[socket_id] === player.name) {
                 io.to(socket.id).emit(
                     "unable-to-set-playername", `username "${player.name}" is taken.`);
@@ -50,6 +57,10 @@ io.on("connection", (socket) => {
         io.emit("receive-message", message);
     });
 
+    socket.on("get-board", (unused) => {
+        io.to(socket.id).emit("receive-board", board);
+    });
+
     socket.on("disconnect", () => {
         // Remove the disconnecting socket's username mapping.
         io.emit("player-disconnected", socket.id);
@@ -62,4 +73,5 @@ io.on("connection", (socket) => {
         name: "player name (click to edit)",
     }
     io.emit("players", players);
+    io.to(socket.id).emit("board", board);
 });

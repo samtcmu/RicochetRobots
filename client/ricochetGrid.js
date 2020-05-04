@@ -140,12 +140,15 @@ export class RicochetGrid {
     }
   }
 
-  // getRobotPosition function will generate a random number used for row and column of robot.
+  // getRobotPosition function will generate a random number used for row and
+  // column of robot.
   generateRandomNumber(max) {
     return Math.floor(Math.random() * Math.floor(max));
   }
 
-  // robotPosition function will set the row and column for the input color of robot. While loop. Keep generating row and column number until you find an empty cell.
+  // robotPosition function will set the row and column for the input color of
+  // robot. While loop. Keep generating row and column number until you find an
+  // empty cell.
   initializedRobotPositions() {
     for (let key in this.robots) {
       let row = this.generateRandomNumber(this.rows);
@@ -160,7 +163,8 @@ export class RicochetGrid {
     }
   }
 
-  // setRobotPostion function takes a color, row, and column and places robot in cell.
+  // setRobotPostion function takes a color, row, and column and places robot
+  // in cell.
   _setRobotPostion(robotColor, row, column) {
     this.robots[robotColor].row = row;
     this.robots[robotColor].column = column;
@@ -171,7 +175,8 @@ export class RicochetGrid {
     return this.robots;
   }
 
-  // setInteriorWalls function will set the walls on the grid. given an array of all the walls
+  // setInteriorWalls function will set the walls on the grid. given an array
+  // of all the walls
   setWalls(walls) {
     for (let i = 0; i < walls.length; i++) {
       this.setWall(walls[i].row, walls[i].column, walls[i].side);
@@ -183,7 +188,8 @@ export class RicochetGrid {
     return this.targets;
   }
 
-  // setTargets function will set the targets on the grid given an array of all the targets.
+  // setTargets function will set the targets on the grid given an array of all
+  // the targets.
   setTargets(targets) {
     for (let i = 0; i < targets.length; i++) {
       this.setTarget(
@@ -217,7 +223,8 @@ export class RicochetGrid {
     return this.grid[row][column].walls;
   }
 
-  // movesForRobot function will return the possible directions a given robot can move.
+  // movesForRobot function will return the possible directions a given robot
+  // can move.
   movesForRobot(robotColor) {
     let possibleMoves = [];
     let robot = this.robots[robotColor];
@@ -251,7 +258,8 @@ export class RicochetGrid {
     return possibleMoves;
   }
 
-  // moveRobot function will set the given robot in the new cell base on the given direction.
+  // moveRobot function will set the given robot in the new cell base on the
+  // given direction.
   moveRobot(robotColor, direction) {
     // get current location of the robot
     let initialRow = this.robots[robotColor].row;
@@ -290,17 +298,20 @@ export class RicochetGrid {
     }
   }
 
-  // reachedTarget function will return true if a robot with the same color of the target reached the target.
+  // reachedTarget function will return true if a robot with the same color of
+  // the target reached the target.
   // get the location of the target. this.currentTarget
   reachedTarget() {
     let targetColor = this.currentTarget.color;
     let targetRow = this.currentTarget.row;
     let targetColumn = this.currentTarget.column;
-    // If there is not robot in the target cell, the target has not been reached and function will return false.
+    // If there is not robot in the target cell, the target has not been
+    // reached and function will return false.
     if (this.getValue(targetRow, targetColumn) !== gridCell.ROBOT_CELL) {
       return false;
     }
-    // We know that there is a robot in the target cell. Any robot can reach the wild target.
+    // We know that there is a robot in the target cell. Any robot can reach
+    // the wild target.
     if (targetColor === gridCell.WILD_TARGET) {
       return true;
     }

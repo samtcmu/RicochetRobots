@@ -9,13 +9,8 @@ robotIdMap[ricochetGrid.BLUE_ROBOT] = 'blue-robot';
 robotIdMap[ricochetGrid.YELLOW_ROBOT] = 'yellow-robot';
 
 class RicochetRobots {
-  constructor() {
-    this.board = new ricochetGrid.RicochetGrid(16, 16);
-    this.board.setWalls(boardElements.walls);
-    this.board.setTargets(boardElements.targets);
-    this.board.initializedRobotPositions();
-    this.board.pickNextTarget();
-    this.board.selectedRobotColor = undefined;
+  constructor(board) {
+    this.board = board;
 
     this.currentRobots = this.deepCopyRobots(this.board.getRobots());
 
@@ -497,14 +492,6 @@ window.ricochetRobots = undefined;
 const socket = io();
 
 window.loadApp = function loadApp() {
-  window.ricochetRobots = new RicochetRobots();
-  window.ricochetRobots.draw(document.getElementById('grid-canvas'));
-  document.addEventListener('keydown', event => {
-    if (event.target.nodeName == "BODY") {
-      window.ricochetRobots.keyboardHandler(event.key);
-    }
-  });
-
   const playersList = document.getElementById("players-list");
   const playerNode = document.createElement("li");
   playerNode.classList.toggle("player");
@@ -561,4 +548,22 @@ window.loadApp = function loadApp() {
     messageList.appendChild(messageNode);
     messageList.scrollTop = messageList.scrollHeight;
   });
+
+  socket.on("board", (board) => {
+    // TODO(samt): Find another way to do this since use of
+    // Object.setPrototypeOf is discouraged due to its poor performance.
+    Object.setPrototypeOf(board, ricochetGrid.RicochetGrid.prototype);
+    for (let r = 0; r < board.getRows(); ++r) {
+      for (let c = 0; c < board.getColumns(); ++c) {
+        Object.setPrototypeOf(board.grid[r][c], gridCell.GridCell.prototype);
+      }
+    }
+    window.ricochetRobots = new RicochetRobots(board);
+    window.ricochetRobots.draw(document.getElementById('grid-canvas'));
+    document.addEventListener('keydown', event => {
+      if (event.target.nodeName == "BODY") {
+        window.ricochetRobots.keyboardHandler(event.key);
+      }
+    });
+  })
 }

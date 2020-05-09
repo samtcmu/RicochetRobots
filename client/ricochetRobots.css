@@ -24,7 +24,6 @@ div#panels {
 
 div#left-panel {
     width: 560px;
-    border-right: 1px solid black;
     padding: 10px;
 }
 
@@ -33,13 +32,17 @@ div#right-panel {
     height: 100%;
     float: right;
     padding: 10px;
+    border-left: 1px solid black;
 }
 
 div#bottom-panel {
+    display: inline-block;
     width: 800px;
     margin-top: 10px;
     padding-top: 10px;
     border-top: 1px solid black;
+    text-align: center;
+    color: gray;
 }
 
 div#right-panel-section {
@@ -107,6 +110,38 @@ input#message-field {
 
 input#send-button {
 
+}
+
+div#bids {
+}
+
+ul#bid-list {
+    border: 1px solid black;
+    list-style-type: none;
+    padding: 0px;
+    height: 200px;
+    overflow-y: auto;
+    margin-bottom: 0px;
+}
+
+li.bid {
+    overflow-x: auto;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+li.failed-bid {
+    color: red;
+}
+
+ul#bid-list li:nth-child(odd) {
+    background: #EEE;
+}
+
+input#bid-field {
+    width: 130px;
 }
 
 div#grid-canvas {

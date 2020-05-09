@@ -1,3 +1,4 @@
+import * as bid from "./bid.js";
 import * as boardElements from "./boardElements.js";
 import * as gridCell from "./gridcell.js";
 import * as ricochetGrid from "./ricochetGrid.js";
@@ -566,4 +567,30 @@ window.loadApp = function loadApp() {
       }
     });
   })
+
+  const sendBidForm = document.getElementById("send-bid-form");
+  sendBidForm.addEventListener('submit', event => {
+    event.preventDefault();
+
+    let bidFieldNode = event.target.querySelector("input#bid-field");
+    socket.emit("bid", {
+       steps: Number(bidFieldNode.value),
+    });
+  })
+
+  const bidList = document.getElementById("bid-list");
+  socket.on("processed-bid", (processedBid) => {
+    Object.setPrototypeOf(processedBid.bid, bid.RicochetRobotsBid.prototype);
+
+    let bidNode = document.createElement("li");
+    bidNode.classList.toggle("bid");
+    if (!processedBid.bidSucceeded) {
+      bidNode.classList.toggle("failed-bid");
+    }
+    bidNode.id = `${processedBid.bid.player()}:${processedBid.bid.steps()}`;
+    bidNode.textContent =
+        `${processedBid.bid.player()}: ${processedBid.bid.steps()}`;
+    bidList.appendChild(bidNode);
+    bidList.scrollTop = bidList.scrollHeight;
+  });
 }

@@ -2,6 +2,8 @@ import * as path from "path";
 import express from "express";
 import socket_io from "socket.io";
 
+import * as auction from "./auction.js";
+import * as bid from "../client/bid.js";
 import * as boardElements from "../client/boardElements.js";
 import * as ricochetGrid from "../client/ricochetGrid.js";
 
@@ -35,6 +37,8 @@ board.initializedRobotPositions();
 board.pickNextTarget();
 board.selectedRobotColor = undefined;
 
+let ricochetRobotsAuction = null;
+
 io.on("connection", (socket) => {
     console.log(`player [${socket.id}] connected`);
 
@@ -59,6 +63,23 @@ io.on("connection", (socket) => {
 
     socket.on("get-board", (unused) => {
         io.to(socket.id).emit("receive-board", board);
+    });
+
+    socket.on("bid", (bidToProcess) => {
+        if (ricochetRobotsAuction === null) {
+            ricochetRobotsAuction = new auction.RicochetRobotsAuction();
+        }
+
+        const now = Date.now();
+        const ricochetRobotsBid = new bid.RicochetRobotsBid(
+            players[socket.id].name, bidToProcess.steps, now);
+
+        const succeeded = ricochetRobotsAuction.addBid(ricochetRobotsBid);
+        io.emit("processed-bid", {
+            bid: ricochetRobotsBid ,
+            bidSucceeded: succeeded,
+            auctionEndTimestamp: ricochetRobotsAuction.endTimestamp(),
+        });
     });
 
     socket.on("disconnect", () => {

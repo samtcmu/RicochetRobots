@@ -1,6 +1,6 @@
 import * as bid from "./bid.js";
 import * as boardElements from "./boardElements.js";
-import * as gridCell from "./gridcell.js";
+import * as gridCell from "./gridCell.js";
 import * as ricochetGrid from "./ricochetGrid.js";
 
 const robotIdMap = {};

@@ -11,7 +11,7 @@
   "devDependencies": {},
   "scripts": {
     "start-chat": "node server/chat.js ${PORT}",
-    "start": "node server/server.js ${PORT}",
+    "start": "node --experimental-modules server/server.js ${PORT}",
     "start-dev": "node server/server.js 8000",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

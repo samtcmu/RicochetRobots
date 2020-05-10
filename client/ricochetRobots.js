@@ -22,6 +22,12 @@ class RicochetRobots {
     this.countdownEnd = undefined;
     this.auctionStatusDiv = document.getElementById("auction-status");
     this.auctionStatusDiv.innerHTML = `Auction Timer: - s`;
+
+    this.instructionsDiv = document.getElementById("instruction-panel");
+    this.instructionsDiv.innerHTML =
+        "Find a path that brings the target robot to the target cell.";
+
+    this.disableMovingRobots = false;
   }
 
   selectNewTarget() {
@@ -39,6 +45,9 @@ class RicochetRobots {
     this.currentRobots = this.deepCopyRobots(this.board.getRobots());
 
     this.countdownEnd = undefined;
+
+    this.instructionsDiv.innerHTLM =
+        "Find a path that brings the target robot to the target cell.";
   }
 
   resetRobots() {
@@ -99,7 +108,6 @@ class RicochetRobots {
     window.requestAnimationFrame(updateCountdown);
   }
 
-
   toggleTargetHightlight() {
     let target = this.board.getCurrentTarget();
     let targetRow = target.row;
@@ -148,8 +156,13 @@ class RicochetRobots {
     }
 
     if (moveDirection !== null) {
-      this.moveSelectedRobot(moveDirection);
+      if (!this.disableMovingRobots) {
+        this.moveSelectedRobot(moveDirection);
+      }
+      return true;
     }
+
+    return false;
   }
 
   getRobotsAsString() {
@@ -260,7 +273,6 @@ class RicochetRobots {
       }
     }
   }
-
 
   bfs() {
     let start = performance.now();
@@ -451,6 +463,10 @@ class RicochetRobots {
       robotSpan.classList.toggle('robot');
 
       robotSpan.addEventListener('mouseup', event => {
+        if (this.disableMovingRobots) {
+          return;
+        }
+
         // Deselect the previously selected robot.
         if (this.board.selectedRobotColor !== undefined) {
           let robotId = robotIdMap[this.board.selectedRobotColor];
@@ -570,7 +586,9 @@ window.loadApp = function loadApp() {
     window.ricochetRobots.draw(document.getElementById('grid-canvas'));
     document.addEventListener('keydown', event => {
       if (event.target.nodeName == "BODY") {
-        window.ricochetRobots.keyboardHandler(event.key);
+        if (window.ricochetRobots.keyboardHandler(event.key)) {
+          event.preventDefault();
+        }
       }
     });
   })
@@ -605,16 +623,22 @@ window.loadApp = function loadApp() {
     bidList.scrollTop = bidList.scrollHeight;
   });
 
+  const instructionsDiv = document.getElementById("instruction-panel");
   socket.on("auction-win", (auctionData) => {
     Object.setPrototypeOf(auctionData.winningBid, bid.RicochetRobotsBid.prototype);
-    const auctionStatusDiv = document.getElementById("auction-status");
-    auctionStatusDiv.innerHTML =
+
+    let instructions = 
         `Winner: ${auctionData.winningBid.player()} (${auctionData.winningBid.steps()} steps)`;
+    instructions += "<br />Present your proposed path.";
+    instructionsDiv.innerHTML = instructions;
   });
   socket.on("auction-lose", (auctionData) => {
     Object.setPrototypeOf(auctionData.winningBid, bid.RicochetRobotsBid.prototype);
-    const auctionStatusDiv = document.getElementById("auction-status");
-    auctionStatusDiv.innerHTML =
+
+    let instructions = 
         `Winner: ${auctionData.winningBid.player()} (${auctionData.winningBid.steps()} steps)`;
+    instructions += `<br />Wait for ${auctionData.winningBid.player()} to present their path.`;
+    instructionsDiv.innerHTML = instructions;
+    window.ricochetRobots.disableMovingRobots = true;
   });
 }

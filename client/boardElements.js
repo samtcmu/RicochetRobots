@@ -1,4 +1,4 @@
-import * as gridCell from "./gridcell.js";
+import * as gridCell from "./gridCell.js";
 
 export const walls = [
   { row: 0, column: 2, side: gridCell.RIGHT },

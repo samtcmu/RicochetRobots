@@ -1,4 +1,4 @@
-import * as gridCell from "./gridcell.js";
+import * as gridCell from "./gridCell.js";
 
 // import GridCell from './gridCell';
 // Possible colors for robots.

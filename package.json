@@ -4,6 +4,9 @@
   "description": "Ricochet Robots Board Game",
   "main": "server/server.js",
   "type": "module",
+  "engines": {
+    "node": "13.8.x"
+  },
   "dependencies": {
     "express": "^4.17.1",
     "socket.io": "^2.3.0"

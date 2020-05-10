@@ -55,6 +55,19 @@ div.right-panel-section-title {
     border-bottom: 1px solid black;
     padding-top: 5px;
     padding-bottom: 5px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+
+}
+
+div.right-panel-section-title#first {
+    text-align: center;
+    font-size: 16px;
+    font-weight: bold;
+    border-bottom: 1px solid black;
+    padding-top: 0px;
+    padding-bottom: 5px;
+    margin-top: 0px;
     margin-bottom: 10px;
 }
 
@@ -65,7 +78,9 @@ div.left-panel-section {
 }
 
 div#instruction-panel{
-    padding: 5px;
+    padding-top: 5px;
+    padding-left: 5px;
+    padding-right: 5px;
     text-align: center;
     font-weight: bold;
 }
@@ -75,6 +90,7 @@ ul#players-list {
     list-style-type: none;
     padding: 0px;
     margin-top: 0px;
+    margin-bottom: 0px;
 }
 
 li.player {

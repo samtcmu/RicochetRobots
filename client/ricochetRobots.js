@@ -18,6 +18,10 @@ class RicochetRobots {
     const pathDiv = document.getElementById("path");
     this.clearDiv(pathDiv);
     pathDiv.innerHTML = "Candidate path: <br />";
+
+    this.countdownEnd = undefined;
+    this.auctionStatusDiv = document.getElementById("auction-status");
+    this.auctionStatusDiv.innerHTML = `Auction Timer: - s`;
   }
 
   selectNewTarget() {
@@ -34,7 +38,7 @@ class RicochetRobots {
     // Save the current robots for the reset function.
     this.currentRobots = this.deepCopyRobots(this.board.getRobots());
 
-    this.countdownStart = undefined;
+    this.countdownEnd = undefined;
   }
 
   resetRobots() {
@@ -68,27 +72,30 @@ class RicochetRobots {
     pathDiv.innerHTML = "Candidate path: <br />";
   }
 
-  startCountdown() {
-    const updateCountdown = () => {
-      const countdownTimerDiv = document.getElementById("countdown-timer");
+  startCountdown(endTimestamp, timerEndCallback) {
+    // Return early if there is already an ongoing countdownm.
+    if (this.countdownEnd !== undefined) {
+      return;
+    }
 
-      if (this.countdownStart === undefined) {
-        countdownTimerDiv.innerHTML = "";
+    const updateCountdown = () => {
+      if (this.countdownEnd === undefined) {
+        timerEndCallback();
         return;
       }
 
       const now = Math.floor(Date.now() / 1000);
-      const secondsRemaining = Math.max(60 - (now - this.countdownStart), 0);
+      const secondsRemaining = Math.max(this.countdownEnd - now, 0);
+      this.auctionStatusDiv.innerHTML = `Auction Timer: ${secondsRemaining} s`;
 
-      if (secondsRemaining > 0) {
-        countdownTimerDiv.innerHTML = `${secondsRemaining} s`;
-        window.requestAnimationFrame(updateCountdown);
-      } else {
-        countdownTimerDiv.innerHTML = "Countdown Over";
+      if (secondsRemaining == 0) {
+        this.countdownEnd = undefined;
       }
+
+      window.requestAnimationFrame(updateCountdown);
     }
 
-    this.countdownStart = Math.floor(Date.now() / 1000);
+    this.countdownEnd = endTimestamp;
     window.requestAnimationFrame(updateCountdown);
   }
 
@@ -582,6 +589,10 @@ window.loadApp = function loadApp() {
   socket.on("processed-bid", (processedBid) => {
     Object.setPrototypeOf(processedBid.bid, bid.RicochetRobotsBid.prototype);
 
+    window.ricochetRobots.startCountdown(
+        Math.floor(processedBid.auctionEndTimestamp / 1000),
+        () => socket.emit("auction-over", {}));
+
     let bidNode = document.createElement("li");
     bidNode.classList.toggle("bid");
     if (!processedBid.bidSucceeded) {
@@ -592,5 +603,18 @@ window.loadApp = function loadApp() {
         `${processedBid.bid.player()}: ${processedBid.bid.steps()}`;
     bidList.appendChild(bidNode);
     bidList.scrollTop = bidList.scrollHeight;
+  });
+
+  socket.on("auction-win", (auctionData) => {
+    Object.setPrototypeOf(auctionData.winningBid, bid.RicochetRobotsBid.prototype);
+    const auctionStatusDiv = document.getElementById("auction-status");
+    auctionStatusDiv.innerHTML =
+        `Winner: ${auctionData.winningBid.player()} (${auctionData.winningBid.steps()} steps)`;
+  });
+  socket.on("auction-lose", (auctionData) => {
+    Object.setPrototypeOf(auctionData.winningBid, bid.RicochetRobotsBid.prototype);
+    const auctionStatusDiv = document.getElementById("auction-status");
+    auctionStatusDiv.innerHTML =
+        `Winner: ${auctionData.winningBid.player()} (${auctionData.winningBid.steps()} steps)`;
   });
 }

@@ -55,12 +55,14 @@ div.right-panel-section-title {
     border-bottom: 1px solid black;
     padding-top: 5px;
     padding-bottom: 5px;
+    margin-bottom: 10px;
 }
 
 ul#players-list {
     border: 1px solid black;
     list-style-type: none;
     padding: 0px;
+    margin-top: 0px;
 }
 
 li.player {
@@ -90,6 +92,7 @@ ul#message-list {
     height: 200px;
     overflow-y: auto;
     margin-bottom: 0px;
+    margin-top: 0px;
 }
 
 li.message {
@@ -122,6 +125,7 @@ ul#bid-list {
     height: 200px;
     overflow-y: auto;
     margin-bottom: 0px;
+    margin-top: 2px;
 }
 
 li.bid {
@@ -142,6 +146,13 @@ ul#bid-list li:nth-child(odd) {
 
 input#bid-field {
     width: 130px;
+}
+
+div#auction-status {
+    font-weight: bold;
+    border: 1px solid black;
+    padding: 5px;
+    content: "";
 }
 
 div#grid-canvas {

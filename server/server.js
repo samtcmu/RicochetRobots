@@ -82,6 +82,21 @@ io.on("connection", (socket) => {
         });
     });
 
+    socket.on("auction-over", (input) => {
+        // Notify the sender whether they won the auction. Also give them the
+        // winning bid.
+        const winningBid = ricochetRobotsAuction.minBid();
+        if (winningBid.player() === players[socket.id].name) {
+            io.to(socket.id).emit("auction-win", {
+                winningBid: winningBid,
+            });
+        } else {
+            io.to(socket.id).emit("auction-lose", {
+                winningBid: winningBid,
+            });
+        }
+    });
+
     socket.on("disconnect", () => {
         // Remove the disconnecting socket's username mapping.
         io.emit("player-disconnected", socket.id);

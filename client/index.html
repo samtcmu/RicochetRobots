@@ -28,12 +28,12 @@
                         <div class="right-panel-section-title">
                             Auction
                         </div>
-                        <div id="countdown-timer">
+                        <div id="auction-status">
                         </div>
                         <div id="bids">
                             <ul id="bid-list"></ul>
                             <form id="send-bid-form">
-                                <input type="number" id="bid-field" min="1" value="10">
+                                <input type="number" id="bid-field" min="0" value="10">
                                 <input type="submit" id="send-button" value="Bid">
                             </form>
                         </div>
@@ -61,7 +61,6 @@
                             <button onclick="ricochetRobots.solveWithDfs()">DFS SOLVE</button>
                             <button onclick="ricochetRobots.selectNewTarget()">NEW TARGET</button>
                             <button onclick="ricochetRobots.resetRobots()">RESET</button>
-                            <button onclick="ricochetRobots.startCountdown()">START COUNTDOWN</button>
                         </div>
                         <div id="solution">
                             <!-- HTML print out of solution will go here. -->

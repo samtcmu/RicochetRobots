@@ -1,4 +1,4 @@
-const AUCTION_DURATION_MS = 5 * 1000;
+const AUCTION_DURATION_MS = 60 * 1000;
 
 export class RicochetRobotsAuction {
   constructor() {

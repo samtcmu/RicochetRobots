@@ -38,6 +38,8 @@ board.pickNextTarget();
 board.selectedRobotColor = undefined;
 
 let ricochetRobotsAuction = null;
+let candidatePathTimestamp = null;
+let candidatePath = null;
 
 io.on("connection", (socket) => {
     console.log(`player [${socket.id}] connected`);
@@ -94,6 +96,16 @@ io.on("connection", (socket) => {
             io.to(socket.id).emit("auction-lose", {
                 winningBid: winningBid,
             });
+        }
+    });
+
+    socket.on("show-path", (pathData) => {
+        // To handle messages that are received out of order check that the
+        // client side timestamp in pathData is larger than the latest
+        // timestamp we have on the serverside.
+        if ((candidatePathTimestamp === null) ||
+            (pathData.timestamp > candidatePathTimestamp)) {
+            socket.broadcast.emit("display-path", pathData);
         }
     });
 

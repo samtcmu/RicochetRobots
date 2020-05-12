@@ -1,3 +1,5 @@
+const AUCTION_DURATION_MS = 5 * 1000;
+
 export class RicochetRobotsAuction {
   constructor() {
     this._bids = {}; 
@@ -10,7 +12,7 @@ export class RicochetRobotsAuction {
   addBid(bid) {
     if (this._endTimestamp === null) {
       // This is the first bid in the auction.
-      this._endTimestamp = bid.timestamp() + (60 * 1000);
+      this._endTimestamp = bid.timestamp() + AUCTION_DURATION_MS;
       this._minBid = bid;
     } else if (bid.timestamp() < this._endTimestamp) {
       if ((bid.player() in this._bids) &&

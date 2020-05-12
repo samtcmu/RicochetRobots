@@ -15,9 +15,9 @@ class RicochetRobots {
 
     this.currentRobots = this.deepCopyRobots(this.board.getRobots());
 
+    this.candidatePath = [];
     const pathDiv = document.getElementById("path");
     this.clearDiv(pathDiv);
-    pathDiv.innerHTML = "Candidate path: <br />";
 
     this.countdownEnd = undefined;
     this.auctionStatusDiv = document.getElementById("auction-status");
@@ -37,16 +37,17 @@ class RicochetRobots {
     this.toggleTargetHightlight();
     const solutionDiv = document.getElementById("solution");
     this.clearDiv(solutionDiv);
+
+    this.candidatePath = [];
     const pathDiv = document.getElementById("path");
     this.clearDiv(pathDiv);
-    pathDiv.innerHTML = "Candidate path: <br />";
 
     // Save the current robots for the reset function.
     this.currentRobots = this.deepCopyRobots(this.board.getRobots());
 
     this.countdownEnd = undefined;
 
-    this.instructionsDiv.innerHTLM =
+    this.instructionsDiv.innerHTML =
         "Find a path that brings the target robot to the target cell.";
   }
 
@@ -76,9 +77,9 @@ class RicochetRobots {
       cellSpan.appendChild(robotSpans[robotColor]);
     }
 
+    this.candidatePath = [];
     const pathDiv = document.getElementById("path");
     this.clearDiv(pathDiv);
-    pathDiv.innerHTML = "Candidate path: <br />";
   }
 
   startCountdown(endTimestamp, timerEndCallback) {
@@ -141,6 +142,10 @@ class RicochetRobots {
     let pathDiv = document.getElementById("path");
     pathDiv.appendChild(
         this.pathComponentSpan(this.board.selectedRobotColor, direction));
+    this.candidatePath.push({
+      robot: this.board.selectedRobotColor,
+      direction: direction
+    });
   }
 
   keyboardHandler(key) {
@@ -467,24 +472,18 @@ class RicochetRobots {
           return;
         }
 
-        // Deselect the previously selected robot.
-        if (this.board.selectedRobotColor !== undefined) {
-          let robotId = robotIdMap[this.board.selectedRobotColor];
-          let selectedRobotSpan = document.getElementById(robotId);
-          selectedRobotSpan.classList.toggle('selected-robot');
+        let robotColor = null;
+        if (event.target.id === 'green-robot') {
+          robotColor = ricochetGrid.GREEN_ROBOT;
+        } else if (event.target.id === 'red-robot') {
+          robotColor = ricochetGrid.RED_ROBOT;
+        } else if (event.target.id === 'blue-robot') {
+          robotColor = ricochetGrid.BLUE_ROBOT;
+        } else if (event.target.id === 'yellow-robot') {
+          robotColor = ricochetGrid.YELLOW_ROBOT;
         }
 
-        // Select a the clicked robot.
-        event.target.classList.toggle('selected-robot');
-        if (event.target.id === 'green-robot') {
-          this.board.selectedRobotColor = ricochetGrid.GREEN_ROBOT;
-        } else if (event.target.id === 'red-robot') {
-          this.board.selectedRobotColor = ricochetGrid.RED_ROBOT;
-        } else if (event.target.id === 'blue-robot') {
-          this.board.selectedRobotColor = ricochetGrid.BLUE_ROBOT;
-        } else if (event.target.id === 'yellow-robot') {
-          this.board.selectedRobotColor = ricochetGrid.YELLOW_ROBOT;
-        }
+        this.selectRobot(robotColor);
       });
 
       if (robotColor === ricochetGrid.GREEN_ROBOT) {
@@ -509,6 +508,22 @@ class RicochetRobots {
 
     // Hightlight current target cell.
     this.toggleTargetHightlight();
+  }
+
+  selectRobot(robotColor) {
+    const toggleSelectedRobotSpan = () => {
+      let robotId = robotIdMap[this.board.selectedRobotColor];
+      let selectedRobotSpan = document.getElementById(robotId);
+      selectedRobotSpan.classList.toggle('selected-robot');
+    }
+
+    // Deselect the previously selected robot.
+    if (this.board.selectedRobotColor !== undefined) {
+      toggleSelectedRobotSpan();
+    }
+
+    this.board.selectedRobotColor = robotColor;
+    toggleSelectedRobotSpan();
   }
 }
 
@@ -579,6 +594,8 @@ window.loadApp = function loadApp() {
     Object.setPrototypeOf(board, ricochetGrid.RicochetGrid.prototype);
     for (let r = 0; r < board.getRows(); ++r) {
       for (let c = 0; c < board.getColumns(); ++c) {
+        // TODO(samt): Find another way to do this since use of
+        // Object.setPrototypeOf is discouraged due to its poor performance.
         Object.setPrototypeOf(board.grid[r][c], gridCell.GridCell.prototype);
       }
     }
@@ -587,6 +604,10 @@ window.loadApp = function loadApp() {
     document.addEventListener('keydown', event => {
       if (event.target.nodeName == "BODY") {
         if (window.ricochetRobots.keyboardHandler(event.key)) {
+          socket.emit("show-path", {
+            timestamp: Date.now(),
+            path: window.ricochetRobots.candidatePath,
+          });
           event.preventDefault();
         }
       }
@@ -605,6 +626,8 @@ window.loadApp = function loadApp() {
 
   const bidList = document.getElementById("bid-list");
   socket.on("processed-bid", (processedBid) => {
+    // TODO(samt): Find another way to do this since use of
+    // Object.setPrototypeOf is discouraged due to its poor performance.
     Object.setPrototypeOf(processedBid.bid, bid.RicochetRobotsBid.prototype);
 
     window.ricochetRobots.startCountdown(
@@ -625,6 +648,8 @@ window.loadApp = function loadApp() {
 
   const instructionsDiv = document.getElementById("instruction-panel");
   socket.on("auction-win", (auctionData) => {
+    // TODO(samt): Find another way to do this since use of
+    // Object.setPrototypeOf is discouraged due to its poor performance.
     Object.setPrototypeOf(auctionData.winningBid, bid.RicochetRobotsBid.prototype);
 
     let instructions = 
@@ -633,6 +658,8 @@ window.loadApp = function loadApp() {
     instructionsDiv.innerHTML = instructions;
   });
   socket.on("auction-lose", (auctionData) => {
+    // TODO(samt): Find another way to do this since use of
+    // Object.setPrototypeOf is discouraged due to its poor performance.
     Object.setPrototypeOf(auctionData.winningBid, bid.RicochetRobotsBid.prototype);
 
     let instructions = 
@@ -640,5 +667,15 @@ window.loadApp = function loadApp() {
     instructions += `<br />Wait for ${auctionData.winningBid.player()} to present their path.`;
     instructionsDiv.innerHTML = instructions;
     window.ricochetRobots.disableMovingRobots = true;
+  });
+
+  socket.on("display-path", (pathData) => {
+    console.log(pathData.path);
+
+    window.ricochetRobots.resetRobots();
+    for (let i = 0; i < pathData.path.length; ++i) {
+        window.ricochetRobots.selectRobot(pathData.path[i].robot);
+        window.ricochetRobots.moveSelectedRobot(pathData.path[i].direction);
+    }
   });
 }

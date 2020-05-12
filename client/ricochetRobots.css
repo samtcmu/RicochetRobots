@@ -25,6 +25,7 @@ div#panels {
 div#left-panel {
     width: 560px;
     padding: 10px;
+    border-right: 1px solid black;
 }
 
 div#right-panel {
@@ -32,7 +33,6 @@ div#right-panel {
     height: 100%;
     float: right;
     padding: 10px;
-    border-left: 1px solid black;
 }
 
 div#bottom-panel {
@@ -77,8 +77,12 @@ div.left-panel-section {
     padding-top: 10px;
 }
 
+div.left-panel-section {
+    padding-top: 20px;
+}
+
 div#instruction-panel{
-    padding-top: 5px;
+    padding-top: 20px;
     padding-left: 5px;
     padding-right: 5px;
     text-align: center;

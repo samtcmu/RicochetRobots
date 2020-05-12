@@ -1,4 +1,5 @@
 import * as gridCell from "./gridCell.js";
+import * as utils from "./utils.js";
 
 // import GridCell from './gridCell';
 // Possible colors for robots.
@@ -101,6 +102,9 @@ export class RicochetGrid {
 
     // The current Target.
     this.currentTarget = undefined;
+
+    // Initial robot positions for the current round.
+    this.initialRobots = undefined;
   }
 
   getRows() {
@@ -161,6 +165,8 @@ export class RicochetGrid {
       this.robots[key].column = column;
       this.setValue(row, column, gridCell.ROBOT_CELL);
     }
+
+    this.initialRobots = this.deepCopy(this.robots);
   }
 
   // setRobotPostion function takes a color, row, and column and places robot
@@ -173,6 +179,10 @@ export class RicochetGrid {
 
   getRobots() {
     return this.robots;
+  }
+
+  getInitialRobots() {
+    return this.initialRobots;
   }
 
   // setInteriorWalls function will set the walls on the grid. given an array
@@ -283,7 +293,8 @@ export class RicochetGrid {
       gridCell.ROBOT_CELL
     );
   }
-  // moveAllRobots for BTS.
+
+  // moveAllRobots for BFS.
   moveAllRobots(newRobotsPostions) {
     for (let key in newRobotsPostions) {
       let initialRow = this.robots[key].row;

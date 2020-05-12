@@ -2,7 +2,7 @@ const AUCTION_DURATION_MS = 60 * 1000;
 
 export class RicochetRobotsAuction {
   constructor() {
-    this._bids = {}; 
+    this._bids = {};
     this._endTimestamp = null;
     this._minBid = null;
     this._failedBids = {};

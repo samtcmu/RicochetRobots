@@ -2,6 +2,7 @@ import * as bid from "./bid.js";
 import * as boardElements from "./boardElements.js";
 import * as gridCell from "./gridCell.js";
 import * as ricochetGrid from "./ricochetGrid.js";
+import * as utils from './utils.js';
 
 const robotIdMap = {};
 robotIdMap[ricochetGrid.GREEN_ROBOT] = 'green-robot';
@@ -12,8 +13,6 @@ robotIdMap[ricochetGrid.YELLOW_ROBOT] = 'yellow-robot';
 class RicochetRobots {
   constructor(board) {
     this.board = board;
-
-    this.currentRobots = this.deepCopyRobots(this.board.getRobots());
 
     this.candidatePath = [];
     const pathDiv = document.getElementById("path");
@@ -42,9 +41,6 @@ class RicochetRobots {
     const pathDiv = document.getElementById("path");
     this.clearDiv(pathDiv);
 
-    // Save the current robots for the reset function.
-    this.currentRobots = this.deepCopyRobots(this.board.getRobots());
-
     this.countdownEnd = undefined;
 
     this.instructionsDiv.innerHTML =
@@ -67,12 +63,13 @@ class RicochetRobots {
       robotSpans[robotColor] = robotSpan;
     }
 
-    this.board.moveAllRobots(this.currentRobots);
+    const initialRobotPositions = this.board.getInitialRobots();
+    this.board.moveAllRobots(initialRobotPositions);
 
-    for (let key in this.currentRobots) {
-      let row = this.currentRobots[key].row;
-      let column = this.currentRobots[key].column;
-      let robotColor = this.currentRobots[key].color;
+    for (let key in initialRobotPositions) {
+      let row = initialRobotPositions[key].row;
+      let column = initialRobotPositions[key].column;
+      let robotColor = initialRobotPositions[key].color;
       let cellSpan = document.getElementById(`${row}, ${column}`);
       cellSpan.appendChild(robotSpans[robotColor]);
     }
@@ -172,10 +169,6 @@ class RicochetRobots {
 
   getRobotsAsString() {
     return JSON.stringify(this.board.getRobots());
-  }
-
-  deepCopyRobots(object) {
-    return JSON.parse(JSON.stringify(object));
   }
 
   robotToString(robotId) {
@@ -283,7 +276,7 @@ class RicochetRobots {
     let start = performance.now();
     let end = null;
     let maxDepthSoFar = 0;
-    let initalRobots = this.deepCopyRobots(this.board.getRobots());
+    let initalRobots = utils.deepCopy(this.board.getRobots());
     let visited = new Set();
     let queue = [{ robots: initalRobots, depth: 0 , path: []}];
     while (queue.length > 0) {
@@ -312,7 +305,7 @@ class RicochetRobots {
         let movesForRobot = this.board.movesForRobot(currentRobots[key].color);
         for (let i = 0; i < movesForRobot.length; i++) {
           this.board.moveRobot(currentRobots[key].color, movesForRobot[i]);
-          let newRobotPostions = this.deepCopyRobots(this.board.getRobots());
+          let newRobotPostions = utils.deepCopy(this.board.getRobots());
           this.board.moveAllRobots(currentRobots);
 
           if (!visited.has(newRobotPostions)) {
@@ -334,7 +327,7 @@ class RicochetRobots {
   }
 
   dfs(maxDepth) {
-    let initalRobots = this.deepCopyRobots(this.board.getRobots());
+    let initalRobots = utils.deepCopy(this.board.getRobots());
     let visited = new Set();
     let stack = [{ robots: initalRobots, depth: 0 , path: []}];
     while (stack.length > 0) {
@@ -361,7 +354,7 @@ class RicochetRobots {
         let movesForRobot = this.board.movesForRobot(currentRobots[key].color);
         for (let i = 0; i < movesForRobot.length; i++) {
           this.board.moveRobot(currentRobots[key].color, movesForRobot[i]);
-          let newRobotPostions = this.deepCopyRobots(this.board.getRobots());
+          let newRobotPostions = utils.deepCopy(this.board.getRobots());
           this.board.moveAllRobots(currentRobots);
 
           if (!visited.has(newRobotPostions)) {
@@ -599,19 +592,36 @@ window.loadApp = function loadApp() {
         Object.setPrototypeOf(board.grid[r][c], gridCell.GridCell.prototype);
       }
     }
+
     window.ricochetRobots = new RicochetRobots(board);
-    window.ricochetRobots.draw(document.getElementById('grid-canvas'));
-    document.addEventListener('keydown', event => {
+    const emitCandidatePath = () => {
+      socket.emit("show-path", {
+        timestamp: Date.now(),
+        path: window.ricochetRobots.candidatePath,
+      });
+    };
+
+    document.addEventListener('keydown', (event) => {
       if (event.target.nodeName == "BODY") {
         if (window.ricochetRobots.keyboardHandler(event.key)) {
-          socket.emit("show-path", {
-            timestamp: Date.now(),
-            path: window.ricochetRobots.candidatePath,
-          });
+          emitCandidatePath();
           event.preventDefault();
         }
       }
     });
+
+    const resetButtonNode = document.getElementById("reset-button");
+    resetButtonNode.addEventListener("click", (event) => {
+      window.ricochetRobots.resetRobots();
+      emitCandidatePath();
+    });
+
+    const submitButtonNode = document.getElementById("submit-button");
+    submitButtonNode.addEventListener("click", (event) => {
+      emitCandidatePath();
+    });
+
+    window.ricochetRobots.draw(document.getElementById('grid-canvas'));
   })
 
   const sendBidForm = document.getElementById("send-bid-form");
@@ -652,7 +662,7 @@ window.loadApp = function loadApp() {
     // Object.setPrototypeOf is discouraged due to its poor performance.
     Object.setPrototypeOf(auctionData.winningBid, bid.RicochetRobotsBid.prototype);
 
-    let instructions = 
+    let instructions =
         `Winner: ${auctionData.winningBid.player()} (${auctionData.winningBid.steps()} steps)`;
     instructions += "<br />Present your proposed path.";
     instructionsDiv.innerHTML = instructions;
@@ -662,7 +672,7 @@ window.loadApp = function loadApp() {
     // Object.setPrototypeOf is discouraged due to its poor performance.
     Object.setPrototypeOf(auctionData.winningBid, bid.RicochetRobotsBid.prototype);
 
-    let instructions = 
+    let instructions =
         `Winner: ${auctionData.winningBid.player()} (${auctionData.winningBid.steps()} steps)`;
     instructions += `<br />Wait for ${auctionData.winningBid.player()} to present their path.`;
     instructionsDiv.innerHTML = instructions;

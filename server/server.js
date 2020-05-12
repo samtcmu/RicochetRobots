@@ -22,7 +22,7 @@ const port = process.argv[2]
 const server = app.listen(port, function () {
    const host = server.address().address
    const port = server.address().port
-   
+
    console.log(`Example app listening at http://${host}:${port}`)
 })
 
@@ -107,6 +107,10 @@ io.on("connection", (socket) => {
             (pathData.timestamp > candidatePathTimestamp)) {
             socket.broadcast.emit("display-path", pathData);
         }
+    });
+
+    socket.on("submit-path", (pathData) => {
+
     });
 
     socket.on("disconnect", () => {

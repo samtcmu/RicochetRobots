@@ -106,6 +106,11 @@ io.on("connection", (socket) => {
         if ((candidatePathTimestamp === null) ||
             (pathData.timestamp > candidatePathTimestamp)) {
             socket.broadcast.emit("display-path", pathData);
+
+            if (board.checkPath(pathData.path)) {
+                // The candidate path reaches the target.
+                io.emit("target-reached", pathData);
+            }
         }
     });
 

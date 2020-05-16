@@ -63,9 +63,9 @@ class RicochetRobots {
       robotSpans[robotColor] = robotSpan;
     }
 
-    const initialRobotPositions = this.board.getInitialRobots();
-    this.board.moveAllRobots(initialRobotPositions);
+    this.board.resetRobots();
 
+    const initialRobotPositions = this.board.getRobots();
     for (let key in initialRobotPositions) {
       let row = initialRobotPositions[key].row;
       let column = initialRobotPositions[key].column;

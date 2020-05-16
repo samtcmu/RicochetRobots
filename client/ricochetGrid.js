@@ -114,14 +114,23 @@ export class RicochetGrid {
   getColumns() {
     return this.columns;
   }
+
+  _getValue(grid, row, column) {
+    return grid[row][column].getCellValue();
+  }
+
   // getValue function will return the value in the cell at the input coordinate
   getValue(row, column) {
-    return this.grid[row][column].getCellValue();
+    return this._getValue(this.grid, row, column);
+  }
+
+  _setValue(grid, row, column, value) {
+    grid[row][column].setCellValue(value);
   }
 
   // setValue function will set the property of the cell.
   setValue(row, column, value) {
-    this.grid[row][column].setCellValue(value);
+    return this._setValue(grid, row, column, value);
   }
 
   // setTarget function will set the target in the cell.
@@ -166,7 +175,7 @@ export class RicochetGrid {
       this.setValue(row, column, gridCell.ROBOT_CELL);
     }
 
-    this.initialRobots = this.deepCopy(this.robots);
+    this.initialRobots = utils.deepCopy(this.robots);
   }
 
   // setRobotPostion function takes a color, row, and column and places robot
@@ -221,6 +230,7 @@ export class RicochetGrid {
     }
     this.currentTarget = currentTarget;
     this.previousTargets.push(currentTarget);
+    this.initialRobots = utils.deepCopy(this.robots);
   }
 
   // getCurrentTarget function returns the currentTarget.
@@ -233,92 +243,103 @@ export class RicochetGrid {
     return this.grid[row][column].walls;
   }
 
-  // movesForRobot function will return the possible directions a given robot
-  // can move.
-  movesForRobot(robotColor) {
+  _movesForRobot(grid, robots, robotColor) {
     let possibleMoves = [];
-    let robot = this.robots[robotColor];
+    let robot = robots[robotColor];
     let row = robot.row;
     let column = robot.column;
-    let robotWalls = this.grid[robot.row][robot.column].getWalls();
+    let robotWalls = grid[robot.row][robot.column].getWalls();
     if (
       !robotWalls.includes(gridCell.UP) &&
-      this.getValue(row - 1, column) === gridCell.EMPTY_CELL
+      this._getValue(grid, row - 1, column) === gridCell.EMPTY_CELL
     ) {
       possibleMoves.push(MOVE_UP);
     }
     if (
       !robotWalls.includes(gridCell.DOWN) &&
-      this.getValue(row + 1, column) === gridCell.EMPTY_CELL
+      this._getValue(grid, row + 1, column) === gridCell.EMPTY_CELL
     ) {
       possibleMoves.push(MOVE_DOWN);
     }
     if (
       !robotWalls.includes(gridCell.LEFT) &&
-      this.getValue(row, column - 1) === gridCell.EMPTY_CELL
+      this._getValue(grid, row, column - 1) === gridCell.EMPTY_CELL
     ) {
       possibleMoves.push(MOVE_LEFT);
     }
     if (
       !robotWalls.includes(gridCell.RIGHT) &&
-      this.getValue(row, column + 1) === gridCell.EMPTY_CELL
+      this._getValue(grid, row, column + 1) === gridCell.EMPTY_CELL
     ) {
       possibleMoves.push(MOVE_RIGHT);
     }
     return possibleMoves;
   }
 
-  // moveRobot function will set the given robot in the new cell base on the
-  // given direction.
-  moveRobot(robotColor, direction) {
-    // get current location of the robot
-    let initialRow = this.robots[robotColor].row;
-    let initialColumn = this.robots[robotColor].column;
-    this.setValue(initialRow, initialColumn, gridCell.EMPTY_CELL);
-    while (this.movesForRobot(robotColor).includes(direction)) {
+  // movesForRobot function will return the possible directions a given robot
+  // can move.
+  movesForRobot(robotColor) {
+    return this._moveRobot(this.grid, this.robots, robotColor);
+  }
+
+  // Stateless implementation of moveRobot. Instead of modifying instance
+  // variables on the RicochetGrid instance this function is called on it only
+  // modifies its inputs.
+  _moveRobot(grid, robots, robotColor, direction) {
+    let initialRow = robots[robotColor].row;
+    let initialColumn = robots[robotColor].column;
+    this._setValue(grid, initialRow, initialColumn, gridCell.EMPTY_CELL);
+    while (this._movesForRobot(grid, robots, robotColor).includes(direction)) {
       if (direction === MOVE_UP) {
         // update the row of the robot.
-        this.robots[robotColor].row--;
+        robots[robotColor].row--;
       } else if (direction === MOVE_DOWN) {
-        this.robots[robotColor].row++;
+        robots[robotColor].row++;
       } else if (direction === MOVE_LEFT) {
-        this.robots[robotColor].column--;
+        robots[robotColor].column--;
       } else if (direction === MOVE_RIGHT) {
-        this.robots[robotColor].column++;
+        robots[robotColor].column++;
       }
     }
-    this.setValue(
-      this.robots[robotColor].row,
-      this.robots[robotColor].column,
+    this._setValue(
+      grid,
+      robots[robotColor].row,
+      robots[robotColor].column,
       gridCell.ROBOT_CELL
     );
   }
 
-  // moveAllRobots for BFS.
-  moveAllRobots(newRobotsPostions) {
+  // moveRobot function will set the given robot in the new cell base on the
+  // given direction.
+  moveRobot(robotColor, direction) {
+    return this._moveRobot(this.grid, this.robots, robotColor, direction);
+  }
+
+  _moveAllRobots(grid, robots, newRobotsPostions) {
     for (let key in newRobotsPostions) {
-      let initialRow = this.robots[key].row;
-      let initialColumn = this.robots[key].column;
-      this.setValue(initialRow, initialColumn, gridCell.EMPTY_CELL);
+      let initialRow = robots[key].row;
+      let initialColumn = robots[key].column;
+      this._setValue(grid, initialRow, initialColumn, gridCell.EMPTY_CELL);
 
       let newRow = newRobotsPostions[key].row;
       let newColumn = newRobotsPostions[key].column;
-      this.robots[key].row = newRow;
-      this.robots[key].column = newColumn;
-      this.setValue(newRow, newColumn, gridCell.ROBOT_CELL);
+      robots[key].row = newRow;
+      robots[key].column = newColumn;
+      this._setValue(grid, newRow, newColumn, gridCell.ROBOT_CELL);
     }
   }
 
-  // reachedTarget function will return true if a robot with the same color of
-  // the target reached the target.
-  // get the location of the target. this.currentTarget
-  reachedTarget() {
+  moveAllRobots(newRobotsPostions) {
+    return _moveAllRobots(this.grid, this.robots, newRobotsPostions);
+  }
+
+  _reachedTarget(grid, robots) {
     let targetColor = this.currentTarget.color;
     let targetRow = this.currentTarget.row;
     let targetColumn = this.currentTarget.column;
     // If there is not robot in the target cell, the target has not been
     // reached and function will return false.
-    if (this.getValue(targetRow, targetColumn) !== gridCell.ROBOT_CELL) {
+    if (this._getValue(grid, targetRow, targetColumn) !== gridCell.ROBOT_CELL) {
       return false;
     }
     // We know that there is a robot in the target cell. Any robot can reach
@@ -329,8 +350,66 @@ export class RicochetGrid {
 
     let robotColor = targetRobotColorMap[targetColor];
     return (
-      this.robots[robotColor].row === targetRow &&
-      this.robots[robotColor].column === targetColumn
+      robots[robotColor].row === targetRow &&
+      robots[robotColor].column === targetColumn
     );
+  }
+
+  // reachedTarget function will return true if a robot with the same color of
+  // the target reached the target.
+  // get the location of the target. this.currentTarget
+  reachedTarget() {
+    return this._reachedTarget(this.grid, this.robots);
+  }
+
+  _resetRobots(grid, robots, initialRobots) {
+    this._moveAllRobots(grid, robots, this.getInitialRobots());
+  }
+
+  resetRobots() {
+    return this._resetRobots(this.grid, this.robots);
+  }
+
+  _cloneGrid() {
+    const clone = [];
+    for (let r = 0; r < this.rows; r++) {
+      const row = [];
+      for (let c = 0; c < this.columns; ++c) {
+        const cell = new gridCell.GridCell();
+
+        cell.setCellValue(this.grid[r][c].getCellValue());
+        const target = this.grid[r][c].getTargetOnCell();
+        if (target !== undefined) {
+            cell.setTargetOnCell(target.color, target.shape);
+        }
+        const walls = this.grid[r][c].getWalls();
+        for (let i = 0; i < walls.length; ++i) {
+            cell.setWallOnCell(walls[i]);
+        }
+
+        row.push(cell);
+      }
+      clone.push(row);
+    }
+
+    return clone;
+  }
+
+  // Checks whether the input path reaches the target without modifying
+  // instance variables on the current RicochetGrid instance; i.e. this
+  // function is stateless.
+  checkPath(path) {
+    // To make this function stateless we need to set up our own version of
+    // this.robots and this.grid that is local to this function. All operations
+    // on these will be local to this function.
+    const robots = utils.deepCopy(this.getRobots());
+    const grid = this._cloneGrid();
+    this._resetRobots(grid, robots);
+
+    for (let i = 0; i < path.length; ++i) {
+        this._moveRobot(grid, robots, path[i].robot, path[i].direction);
+    }
+
+    return this._reachedTarget(grid, robots);
   }
 }

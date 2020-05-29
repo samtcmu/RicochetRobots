@@ -38,8 +38,6 @@ board.pickNextTarget();
 board.selectedRobotColor = undefined;
 
 let ricochetRobotsAuction = null;
-let candidatePathTimestamp = null;
-let candidatePath = null;
 
 io.on("connection", (socket) => {
     console.log(`player [${socket.id}] connected`);
@@ -84,38 +82,58 @@ io.on("connection", (socket) => {
         });
     });
 
-    socket.on("auction-over", (input) => {
+    function sendAuctionResults(failedBids) {
         // Notify the sender whether they won the auction. Also give them the
         // winning bid.
-        const winningBid = ricochetRobotsAuction.minBid();
+        const winningBid = ricochetRobotsAuction.minBid(failedBids);
+        if (winningBid === null) {
+            // No bids remaining for this round; get confirmation from players
+            // to start next round.
+            return;
+        }
+
+        const showPathDeadlineTimestamp =
+            ricochetRobotsAuction.minBidShowPathDeadlineTimestamp();
         if (winningBid.player() === players[socket.id].name) {
             io.to(socket.id).emit("auction-win", {
                 winningBid: winningBid,
+                failedBids: 0,
+                showPathDeadlineTimestamp: showPathDeadlineTimestamp,
             });
         } else {
             io.to(socket.id).emit("auction-lose", {
                 winningBid: winningBid,
+                failedBids: 0,
+                showPathDeadlineTimestamp: showPathDeadlineTimestamp,
             });
         }
+    }
+
+    socket.on("auction-over", (input) => {
+        sendAuctionResults(0);
     });
 
     socket.on("show-path", (pathData) => {
-        // To handle messages that are received out of order check that the
-        // client side timestamp in pathData is larger than the latest
-        // timestamp we have on the serverside.
-        if ((candidatePathTimestamp === null) ||
-            (pathData.timestamp > candidatePathTimestamp)) {
-            socket.broadcast.emit("display-path", pathData);
+        if (Date.now() <= ricochetRobotsAuction.endTimestamp()) {
+            // Do nothing since the auction is still ongoing.
+            return;
+        }
 
-            if (board.checkPath(pathData.path)) {
-                // The candidate path reaches the target.
-                io.emit("target-reached", pathData);
-            }
+        socket.broadcast.emit("display-path", pathData);
+
+        if ((pathData.timestamp <=
+             ricochetRobotsAuction.minBidShowPathDeadlineTimestamp()) &&
+            (pathData.path.length <=
+             ricochetRobotsAuction.minBid().steps()) &&
+            board.checkPath(pathData.path)) {
+            // The candidate path reaches the target within player's bid
+            // amount for path produced within the show path deadline.
+            io.emit("target-reached", pathData);
         }
     });
 
-    socket.on("submit-path", (pathData) => {
-
+    socket.on("path-not-found", (input) => {
+        sendAuctionResults(input.failedBids);
     });
 
     socket.on("disconnect", () => {

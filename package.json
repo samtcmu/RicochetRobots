@@ -8,6 +8,7 @@
     "node": "13.8.x"
   },
   "dependencies": {
+    "async-mutex": "^0.2.2",
     "express": "^4.17.1",
     "socket.io": "^2.3.0"
   },

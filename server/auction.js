@@ -1,4 +1,5 @@
 const AUCTION_DURATION_MS = 60 * 1000;
+const SHOW_PATH_DURATION_MS = 60 * 1000;
 
 export class RicochetRobotsAuction {
   constructor() {
@@ -6,6 +7,7 @@ export class RicochetRobotsAuction {
     this._endTimestamp = null;
     this._minBid = null;
     this._failedBids = {};
+    this._minBidShowPathDeadlineTimestamp = null;
   }
 
   // Returns true if the bid was successfully made.
@@ -39,7 +41,15 @@ export class RicochetRobotsAuction {
 
   // Returns the minimum bid.
   minBid() {
+    if (this._minBidShowPathDeadlineTimestamp === null) {
+      this._minBidShowPathDeadlineTimestamp =
+          Date.now() + SHOW_PATH_DURATION_MS;
+    }
     return this._minBid;
+  }
+
+  minBidShowPathDeadlineTimestamp() {
+    return this._minBidShowPathDeadlineTimestamp;
   }
 
   minBidFailed() {
@@ -52,12 +62,13 @@ export class RicochetRobotsAuction {
     // Find the bid with the smallest number of steps. If multiple bids have
     // the same number of steps pick the one that was made first.
     this._minBid = null;
-    for (player in this._bids) {
+    for (let player in this._bids) {
       if ((this._minBids == null) ||
           (this._bids[player].steps() < this._minBid.steps()) ||
           ((this._bids[player].steps() == this._minBid.steps()) &&
            (this._bids[player].timestamp() < this._minBid.timestamp()))) {
         this._minBid = this._bids[player];
+        this._minBidShowPathDeadlineTimestamp = null;
       }
     }
   }

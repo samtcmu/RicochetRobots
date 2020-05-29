@@ -27,6 +27,8 @@ class RicochetRobots {
         "Find a path that brings the target robot to the target cell.";
 
     this.disableMovingRobots = false;
+    this.sendMovesToServer = false;
+    this.failedBids = null;
   }
 
   selectNewTarget() {
@@ -45,6 +47,8 @@ class RicochetRobots {
 
     this.instructionsDiv.innerHTML =
         "Find a path that brings the target robot to the target cell.";
+
+    this.failedBids = null;
   }
 
   resetRobots() {
@@ -79,7 +83,7 @@ class RicochetRobots {
     this.clearDiv(pathDiv);
   }
 
-  startCountdown(endTimestamp, timerEndCallback) {
+  startCountdown(timerDescription, endTimestamp, timerEndCallback) {
     // Return early if there is already an ongoing countdownm.
     if (this.countdownEnd !== undefined) {
       return;
@@ -93,7 +97,8 @@ class RicochetRobots {
 
       const now = Math.floor(Date.now() / 1000);
       const secondsRemaining = Math.max(this.countdownEnd - now, 0);
-      this.auctionStatusDiv.innerHTML = `Auction Timer: ${secondsRemaining} s`;
+      this.auctionStatusDiv.innerHTML =
+          `${timerDescription}: ${secondsRemaining} s`;
 
       if (secondsRemaining == 0) {
         this.countdownEnd = undefined;
@@ -595,10 +600,12 @@ window.loadApp = function loadApp() {
 
     window.ricochetRobots = new RicochetRobots(board);
     const emitCandidatePath = () => {
-      socket.emit("show-path", {
-        timestamp: Date.now(),
-        path: window.ricochetRobots.candidatePath,
-      });
+      if (window.ricochetRobots.sendMovesToServer) {
+        socket.emit("show-path", {
+          timestamp: Date.now(),
+          path: window.ricochetRobots.candidatePath,
+        });
+      }
     };
 
     document.addEventListener('keydown', (event) => {
@@ -613,11 +620,6 @@ window.loadApp = function loadApp() {
     const resetButtonNode = document.getElementById("reset-button");
     resetButtonNode.addEventListener("click", (event) => {
       window.ricochetRobots.resetRobots();
-      emitCandidatePath();
-    });
-
-    const submitButtonNode = document.getElementById("submit-button");
-    submitButtonNode.addEventListener("click", (event) => {
       emitCandidatePath();
     });
 
@@ -641,6 +643,7 @@ window.loadApp = function loadApp() {
     Object.setPrototypeOf(processedBid.bid, bid.RicochetRobotsBid.prototype);
 
     window.ricochetRobots.startCountdown(
+        "Auction Timer",
         Math.floor(processedBid.auctionEndTimestamp / 1000),
         () => socket.emit("auction-over", {}));
 
@@ -666,6 +669,18 @@ window.loadApp = function loadApp() {
         `Winner: ${auctionData.winningBid.player()} (${auctionData.winningBid.steps()} steps)`;
     instructions += "<br />Present your proposed path.";
     instructionsDiv.innerHTML = instructions;
+    window.ricochetRobots.sendMovesToServer = true;
+    window.ricochetRobots.failedBids = 0;
+
+    window.ricochetRobots.startCountdown(
+        "Show Path Timer",
+        Math.floor(auctionData.showPathDeadlineTimestamp / 1000),
+        () => {
+            window.ricochetRobots.failedBids++;
+            socket.emit("path-not-found", {
+                failedBids: window.ricochetRobots.failedBids,
+            });
+        });
   });
   socket.on("auction-lose", (auctionData) => {
     // TODO(samt): Find another way to do this since use of
@@ -677,6 +692,18 @@ window.loadApp = function loadApp() {
     instructions += `<br />Wait for ${auctionData.winningBid.player()} to present their path.`;
     instructionsDiv.innerHTML = instructions;
     window.ricochetRobots.disableMovingRobots = true;
+    window.ricochetRobots.sendMovesToServer = false;
+    window.ricochetRobots.failedBids = 0;
+
+    window.ricochetRobots.startCountdown(
+        "Show Path Timer",
+        Math.floor(auctionData.showPathDeadlineTimestamp / 1000),
+        () => {
+            window.ricochetRobots.failedBids++;
+            socket.emit("path-not-found", {
+                failedBids: window.ricochetRobots.failedBids,
+            });
+        });
   });
 
   socket.on("display-path", (pathData) => {

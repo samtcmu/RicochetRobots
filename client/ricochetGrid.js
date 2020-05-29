@@ -130,7 +130,7 @@ export class RicochetGrid {
 
   // setValue function will set the property of the cell.
   setValue(row, column, value) {
-    return this._setValue(grid, row, column, value);
+    return this._setValue(this.grid, row, column, value);
   }
 
   // setTarget function will set the target in the cell.
